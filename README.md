@@ -40,16 +40,16 @@ Each attack report contains:
 ### Installation
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Start development server
-npm run dev
+bun dev
 
 # Build for production
-npm run build
+bun run build
 
 # Start production server
-npm start
+bun start
 ```
 
 ### Environment Variables
