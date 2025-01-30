@@ -33,7 +33,7 @@ export default function ApiDocs() {
             API Documentation
           </h1>
           <p className="text-center mt-2 text-green-300/60">
-            Cyber Defense Monitor API Reference
+            Cyber Medic API Reference
           </p>
         </div>
       </header>
@@ -52,7 +52,7 @@ export default function ApiDocs() {
             <div>
               <h3 className="font-semibold mb-2">Base URL</h3>
               <code className="bg-black/40 px-2 py-1 rounded text-green-400">
-                https://cybereport.vercel.app/api
+                {process.env.NEXT_PUBLIC_API_URL}
               </code>
             </div>
           </CardContent>

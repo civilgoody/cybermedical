@@ -44,7 +44,7 @@ export default function Home() {
       <header className="border-b border-green-900/20 bg-black/40 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-4xl font-bold text-center cyber-glow text-green-400">
-            Cyber Defense Monitor
+            Cyber Medic 🧑‍⚕️
           </h1>
           <p className="text-center mt-2 text-green-300/60">
             Attack Analysis and Reporting
