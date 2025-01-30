@@ -49,6 +49,14 @@ export default function Home() {
           <p className="text-center mt-2 text-green-300/60">
             Attack Analysis and Reporting
           </p>
+          <nav className="mt-4 text-center">
+            <a 
+              href="/api/docs" 
+              className="text-green-400 hover:text-green-300 text-sm border border-green-900/20 bg-black/40 px-3 py-1.5 rounded-md hover:border-green-500/50 transition-colors"
+            >
+              API Documentation →
+            </a>
+          </nav>
         </div>
       </header>
 
