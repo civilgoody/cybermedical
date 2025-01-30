@@ -1,38 +1,25 @@
-type AttackReport = {
-  id: string;
-  timestamp: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-  analysis: string;
-}
+import type { AttackReport } from '@/types/reports';
 
 export const mockReports: AttackReport[] = [
   {
-    id: "1",
-    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
-    severity: "critical",
-    description: "Multiple failed SSH login attempts detected from IP 192.168.1.100",
-    analysis: "Potential brute force attack targeting SSH service. IP has been temporarily blocked. Recommend reviewing access logs and implementing rate limiting."
+    id: '1',
+    created_at: new Date().toISOString(),
+    severity: 'high',
+    description: 'Multiple failed SSH login attempts detected from IP 192.168.1.100',
+    analysis: 'Pattern suggests a brute force attack targeting SSH service. Source IP has been flagged for suspicious activity across multiple time windows. Recommended actions: 1) Block the source IP, 2) Review SSH configuration, 3) Implement rate limiting.'
   },
   {
-    id: "2",
-    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 minutes ago
-    severity: "high",
-    description: "Unusual outbound traffic spike detected on port 445",
-    analysis: "Possible malware activity attempting to spread through SMB protocol. Affected system isolated. Recommend immediate malware scan and network traffic analysis."
+    id: '2',
+    created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    severity: 'critical',
+    description: 'Unusual data exfiltration detected on port 443',
+    analysis: 'Large volume of encrypted traffic detected to unknown external endpoints. Traffic patterns indicate potential data exfiltration attempt. High priority investigation required. Immediate actions: 1) Isolate affected system, 2) Block suspicious IPs, 3) Initiate incident response protocol.'
   },
   {
-    id: "3",
-    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-    severity: "medium",
-    description: "Multiple 404 errors from web application scanning",
-    analysis: "Directory enumeration attempt detected. IP shows pattern consistent with automated vulnerability scanning. Enhanced monitoring implemented."
-  },
-  {
-    id: "4",
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 minutes ago
-    severity: "low",
-    description: "SSL certificate expiration warning",
-    analysis: "SSL certificate for api.example.com will expire in 30 days. Recommend renewing certificate to prevent service disruption."
+    id: '3',
+    created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+    severity: 'medium',
+    description: 'Anomalous process behavior detected on web server',
+    analysis: 'Web server process exhibiting unusual memory and CPU patterns. Possible memory leak or resource exhaustion attack. Recommended actions: 1) Review process logs, 2) Monitor resource usage, 3) Update web server security patches.'
   }
 ]; 

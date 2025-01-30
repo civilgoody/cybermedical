@@ -16,6 +16,19 @@ const severityConfig = {
   critical: { color: 'bg-red-500/20 text-red-500', icon: AlertOctagon },
 };
 
+function formatTimestamp(isoString: string): string {
+  try {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(date);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return isoString;
+  }
+}
+
 const AttackReport = ({ timestamp, severity, description, analysis }: AttackReportProps) => {
   const { color, icon: Icon } = severityConfig[severity];
   
@@ -35,7 +48,7 @@ const AttackReport = ({ timestamp, severity, description, analysis }: AttackRepo
       <CardContent>
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <Clock className="mr-2 h-4 w-4" />
-          <span suppressHydrationWarning>{timestamp}</span>
+          <span suppressHydrationWarning>{formatTimestamp(timestamp)}</span>
         </div>
         <div className="space-y-4">
           <div>

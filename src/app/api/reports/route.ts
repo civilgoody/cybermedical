@@ -1,17 +1,15 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
 
-// In-memory storage for reports
-let reports: Array<{
-  id: string;
-  timestamp: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-  analysis: string;
-}> = [];
-
 export async function POST(request: Request) {
+  if (!supabaseAdmin) {
+    return NextResponse.json(
+      { error: 'Database connection not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
     const report = await request.json();
     
@@ -31,13 +29,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Insert into Supabase
-    const { data, error } = await supabase
+    // Insert into Supabase using admin client
+    const { data, error } = await supabaseAdmin
       .from('attack_reports')
       .insert({
         severity: report.severity,
         description: report.description,
         analysis: report.analysis,
+        created_at: new Date().toISOString(), // Explicitly set the timestamp
       })
       .select()
       .single();
@@ -55,8 +54,15 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
+  if (!supabaseAdmin) {
+    return NextResponse.json(
+      { error: 'Database connection not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('attack_reports')
       .select('*')
       .order('created_at', { ascending: false })
