@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/supabase';
 
 // In-memory storage for reports
 let reports: Array<{
@@ -29,18 +31,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Add metadata
-    const newReport = {
-      ...report,
-      id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
-    };
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from('attack_reports')
+      .insert({
+        severity: report.severity,
+        description: report.description,
+        analysis: report.analysis,
+      })
+      .select()
+      .single();
 
-    // Store report
-    reports.unshift(newReport); // Add to start of array
-    reports = reports.slice(0, 100); // Keep only latest 100 reports
+    if (error) throw error;
 
-    return NextResponse.json(newReport, { status: 201 });
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
     console.error('Error processing report:', error);
     return NextResponse.json(
@@ -51,5 +55,21 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json(reports);
+  try {
+    const { data, error } = await supabase
+      .from('attack_reports')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 } 
