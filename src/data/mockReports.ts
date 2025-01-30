@@ -1,4 +1,12 @@
-export const mockReports = [
+type AttackReport = {
+  id: string;
+  timestamp: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  analysis: string;
+}
+
+export const mockReports: AttackReport[] = [
   {
     id: "1",
     timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
@@ -27,4 +35,4 @@ export const mockReports = [
     description: "SSL certificate expiration warning",
     analysis: "SSL certificate for api.example.com will expire in 30 days. Recommend renewing certificate to prevent service disruption."
   }
-] as const; 
+]; 

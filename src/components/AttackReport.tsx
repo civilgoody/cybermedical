@@ -35,7 +35,7 @@ const AttackReport = ({ timestamp, severity, description, analysis }: AttackRepo
       <CardContent>
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <Clock className="mr-2 h-4 w-4" />
-          {timestamp}
+          <span suppressHydrationWarning>{timestamp}</span>
         </div>
         <div className="space-y-4">
           <div>
