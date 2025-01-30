@@ -1,13 +1,13 @@
 # Cyber AI Attack Report System
 
-A real-time security monitoring and reporting system that processes server attacks through AI analysis and displays them in an interactive web interface. The system uses server-side AI processing to analyze attacks and sends the processed reports to this web application for visualization.
+A real-time security monitoring and reporting system that processes server attacks through AI analysis and displays them in an interactive web interface. The system receives attack reports from the security server, processes them through the Next.js API routes, and displays them in real-time.
 
 ## System Overview
 
 This system consists of three main components:
-1. Server-side attack detection and monitoring
-2. Server-side AI analysis of attack patterns
-3. Vite-powered web interface for attack visualization and reporting
+1. External security server for attack detection and monitoring
+2. Next.js API routes for receiving and processing attack reports
+3. Next.js frontend for attack visualization and reporting
 
 ## Attack Severity Levels
 
@@ -26,91 +26,112 @@ Each attack report contains:
 - Timestamp of the attack
 - Severity level
 - Description of the attack
-- AI-generated analysis (processed on the server)
+- AI-generated analysis (received from security server)
 - Visual indicators and badges for quick assessment
 
 ## Setup and Configuration
 
 ### Prerequisites
-- Bun (Latest version)
-- Vite
+- Node.js (Latest LTS version)
+- Next.js 14+
 - TypeScript
-- Connection to the attack analysis server
+- Connection to the security server
 
 ### Installation
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Start development server
-bun dev
+npm run dev
 
 # Build for production
-bun run build
+npm run build
 
-# Preview production build
-bun preview
+# Start production server
+npm start
 ```
 
 ### Environment Variables
-Create a `.env` file in the root directory with:
+Create a `.env.local` file in the root directory with:
 ```
-# Server endpoint where the AI-processed attack reports are fetched from
-VITE_API_ENDPOINT=your_server_endpoint_here
+# Security server endpoint where the attack reports are received from
+SECURITY_SERVER_ENDPOINT=your_security_server_url
+
+# Optional: Security server authentication token
+SECURITY_SERVER_TOKEN=your_auth_token
+```
+
+## API Routes
+
+The application uses Next.js API routes to handle attack reports:
+
+```typescript
+// POST /api/reports
+// Receives attack reports from the security server
+POST /api/reports
+
+// GET /api/reports
+// Retrieves processed attack reports with pagination
+GET /api/reports?page=1&limit=10
+
+// GET /api/reports/critical
+// Retrieves only critical severity reports
+GET /api/reports/critical
 ```
 
 ## Security Considerations
 
-1. **Server Communication**
-   - Ensure secure communication with the analysis server
-   - Implement proper authentication mechanisms
-   - Use HTTPS for all API communications
+1. **API Security**
+   - Implement authentication for API routes
+   - Validate incoming report data
+   - Use environment variables for sensitive data
 
 2. **Attack Data Handling**
-   - Reports are displayed with appropriate access controls
-   - Sensitive information is properly sanitized before display
-   - Implement proper data validation for incoming reports
+   - Reports are stored securely in the database
+   - Access controls for different severity levels
+   - Data sanitization before display
 
 3. **Real-time Monitoring**
-   - System provides immediate notifications for critical attacks
-   - Attack patterns are displayed in real-time
-   - Historical data is maintained for trend analysis
+   - Server-sent events for real-time updates
+   - Immediate notifications for critical attacks
+   - Historical data persistence
 
 ## Development Guidelines
 
 1. **Adding New Features**
-   - Follow the existing component structure
+   - Follow Next.js best practices
    - Maintain type safety with TypeScript
-   - Use the provided UI components for consistency
+   - Use provided UI components for consistency
 
 2. **Testing**
-   - Write tests for new features
-   - Test across different severity levels
-   - Verify proper display of AI analysis from server
+   - Write API route tests
+   - Test real-time updates
+   - Verify report processing logic
 
 3. **Performance**
-   - Optimize for real-time updates
-   - Implement proper error handling
-   - Monitor system resource usage
+   - Implement proper caching
+   - Optimize API responses
+   - Monitor server resource usage
 
 ## Troubleshooting
 
 Common issues and solutions:
-1. Server Connection Issues
-   - Verify API endpoint configuration
-   - Check network connectivity
-   - Confirm server status and authentication
+1. API Connection Issues
+   - Check API route configurations
+   - Verify security server connectivity
+   - Review authentication tokens
 
 2. Report Display Problems
-   - Clear browser cache
-   - Check for JavaScript console errors
-   - Verify data format consistency
+   - Check client-side state management
+   - Verify WebSocket connections
+   - Debug real-time update issues
 
 ## Support and Maintenance
 
 For support:
 1. Check the documentation first
-2. Review system logs
+2. Review application logs
 3. Contact the security team for critical issues
 4. Monitor report processing accuracy
 
