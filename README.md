@@ -1,69 +1,119 @@
-# Welcome to your Lovable project
+# Cyber AI Attack Report System
 
-## Project info
+A real-time security monitoring and reporting system that processes server attacks through AI analysis and displays them in an interactive web interface. The system uses server-side AI processing to analyze attacks and sends the processed reports to this web application for visualization.
 
-**URL**: https://lovable.dev/projects/77405a2e-3c1e-4ce8-bd9a-be42037b944d
+## System Overview
 
-## How can I edit this code?
+This system consists of three main components:
+1. Server-side attack detection and monitoring
+2. Server-side AI analysis of attack patterns
+3. Vite-powered web interface for attack visualization and reporting
 
-There are several ways of editing your application.
+## Attack Severity Levels
 
-**Use Lovable**
+The system categorizes attacks into four severity levels:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/77405a2e-3c1e-4ce8-bd9a-be42037b944d) and start prompting.
+| Level | Description | Visual Indicator |
+|-------|-------------|------------------|
+| Critical | Immediate attention required. Potential severe system compromise. | Red badge with AlertOctagon icon |
+| High | Serious security threat requiring prompt action. | Orange badge with AlertTriangle icon |
+| Medium | Moderate risk requiring investigation. | Yellow badge with AlertTriangle icon |
+| Low | Minor security event requiring monitoring. | Green badge with Shield icon |
 
-Changes made via Lovable will be committed automatically to this repo.
+## Attack Report Structure
 
-**Use your preferred IDE**
+Each attack report contains:
+- Timestamp of the attack
+- Severity level
+- Description of the attack
+- AI-generated analysis (processed on the server)
+- Visual indicators and badges for quick assessment
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Setup and Configuration
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
+### Prerequisites
+- Bun (Latest version)
 - Vite
 - TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Connection to the attack analysis server
 
-## How can I deploy this project?
+### Installation
+```bash
+# Install dependencies
+bun install
 
-Simply open [Lovable](https://lovable.dev/projects/77405a2e-3c1e-4ce8-bd9a-be42037b944d) and click on Share -> Publish.
+# Start development server
+bun dev
 
-## I want to use a custom domain - is that possible?
+# Build for production
+bun run build
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+# Preview production build
+bun preview
+```
+
+### Environment Variables
+Create a `.env` file in the root directory with:
+```
+# Server endpoint where the AI-processed attack reports are fetched from
+VITE_API_ENDPOINT=your_server_endpoint_here
+```
+
+## Security Considerations
+
+1. **Server Communication**
+   - Ensure secure communication with the analysis server
+   - Implement proper authentication mechanisms
+   - Use HTTPS for all API communications
+
+2. **Attack Data Handling**
+   - Reports are displayed with appropriate access controls
+   - Sensitive information is properly sanitized before display
+   - Implement proper data validation for incoming reports
+
+3. **Real-time Monitoring**
+   - System provides immediate notifications for critical attacks
+   - Attack patterns are displayed in real-time
+   - Historical data is maintained for trend analysis
+
+## Development Guidelines
+
+1. **Adding New Features**
+   - Follow the existing component structure
+   - Maintain type safety with TypeScript
+   - Use the provided UI components for consistency
+
+2. **Testing**
+   - Write tests for new features
+   - Test across different severity levels
+   - Verify proper display of AI analysis from server
+
+3. **Performance**
+   - Optimize for real-time updates
+   - Implement proper error handling
+   - Monitor system resource usage
+
+## Troubleshooting
+
+Common issues and solutions:
+1. Server Connection Issues
+   - Verify API endpoint configuration
+   - Check network connectivity
+   - Confirm server status and authentication
+
+2. Report Display Problems
+   - Clear browser cache
+   - Check for JavaScript console errors
+   - Verify data format consistency
+
+## Support and Maintenance
+
+For support:
+1. Check the documentation first
+2. Review system logs
+3. Contact the security team for critical issues
+4. Monitor report processing accuracy
+
+## License
+
+This project is proprietary and confidential. Unauthorized copying or distribution is prohibited.
