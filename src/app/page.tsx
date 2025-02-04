@@ -1,108 +1,105 @@
-'use client';
+import { Bell, Settings, Search, ChevronDown } from "lucide-react"
+import { ThreatReportSection } from "../components/threat-report-section"
+import NetworkTrafficChart from "../components/network-traffic-chart"
+import ThreatMap from "../components/threat-map"
+import ThreatTypeChart from "../components/threat-type-chart"
+import Sidebar from "../components/sidebar"
 
-import { useState, useEffect } from 'react';
-import AttackReport from '@/components/AttackReport';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
-import { mockReports } from '@/data/mockReports';
-import type { AttackReport as AttackReportType } from '@/types/reports';
-
-export default function Home() {
-  const [reports, setReports] = useState<AttackReportType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  async function fetchReports() {
-    try {
-      setIsRefreshing(true);
-      const response = await fetch('/api/reports');
-      if (!response.ok) throw new Error('Failed to fetch reports');
-      const data = await response.json();
-      
-      // If no saved reports, use mock data
-      setReports(data.length > 0 ? data : mockReports);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching reports:', err);
-      setError('Failed to load reports');
-      // Fallback to mock data on error
-      setReports(mockReports);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
+export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-green-900/20 bg-black/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-4xl font-bold text-center cyber-glow text-green-400">
-            Cyber Medic 🧑‍⚕️
-          </h1>
-          <p className="text-center mt-2 text-green-300/60">
-            Attack Analysis and Reporting
-          </p>
-          <nav className="mt-4 text-center">
-            <a 
-              href="/api/docs" 
-              className="text-green-400 hover:text-green-300 text-sm border border-green-900/20 bg-black/40 px-3 py-1.5 rounded-md hover:border-green-500/50 transition-colors"
-            >
-              API Documentation →
-            </a>
+    <div className="min-h-screen bg-black">
+      {/* Top Navigation */}
+      <header className="h-16 px-4 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <button className="p-2 rounded-full bg-[#1A1A1A]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-[#666666]">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <nav className="flex items-center gap-6 bg-[#1A1A1A] rounded-full px-4 py-2">
+            <button className="bg-[#FF29A8] text-white px-4 py-1.5 rounded-md text-sm flex items-center gap-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              Dashboard
+            </button>
+            <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
+              <Bell className="w-4 h-4" />
+              <span className="text-sm">Alerts</span>
+            </button>
+            <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span className="text-sm">Reports</span>
+            </button>
+            <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
+              <Settings className="w-4 h-4" />
+              <span className="text-sm">Settings</span>
+            </button>
           </nav>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="p-2 rounded-full bg-[#1A1A1A]">
+            <Search className="w-5 h-5 text-[#666666]" />
+          </button>
+          <div className="flex items-center gap-4">
+            <button className="p-2 rounded-full bg-[#1A1A1A]">
+              <Bell className="w-5 h-5 text-[#666666]" />
+            </button>
+            <button className="p-2 rounded-full bg-[#1A1A1A]">
+              <Settings className="w-5 h-5 text-[#666666]" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2">
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JbcfEPrJt7fJ4PEnlUMqlzWY0tAguI.png"
+              alt="Profile"
+              className="w-8 h-8 rounded-full"
+            />
+            <div className="flex items-center gap-2">
+              <div>
+                <div className="text-sm font-medium text-white">John Doe</div>
+                <div className="text-xs text-[#666666]">John@gmail.com</div>
+              </div>
+              <ChevronDown className="w-4 h-4 text-[#666666]" />
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 py-8">
-        <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-green-400">Attack Reports</h2>
-          <Button
-            onClick={fetchReports}
-            disabled={loading || isRefreshing}
-            variant="outline"
-            className="border-green-900/20 hover:border-green-500/50"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh Reports'}
-          </Button>
-        </div>
+      <div className="flex">
+        <Sidebar />
 
-        {error && (
-          <div className="mb-4 p-4 border border-red-500/20 bg-red-500/10 text-red-400 rounded-md">
-            {error}
+        <main className="flex-1 p-6">
+          <h1 className="text-2xl font-semibold text-white mb-6">Dashboard</h1>
+
+          <div className="grid grid-cols-12 gap-6">
+            {/* AI Threat Report - 4 columns */}
+            <div className="col-span-4">
+              <ThreatReportSection />
+            </div>
+
+            {/* Right side content - 8 columns */}
+            <div className="col-span-8 space-y-6">
+              {/* Network Traffic takes full width */}
+              <NetworkTrafficChart />
+
+              {/* Bottom row split into two */}
+              <div className="grid grid-cols-2 gap-6">
+                <ThreatMap />
+                <ThreatTypeChart />
+              </div>
+            </div>
           </div>
-        )}
-        
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="w-12 h-12 border-4 border-green-500/20 border-t-green-500 rounded-full animate-spin" />
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {reports.map((report) => (
-              <AttackReport
-                key={report.id}
-                timestamp={report.created_at}
-                severity={report.severity}
-                description={report.description}
-                analysis={report.analysis}
-              />
-            ))}
-            {reports.length === 0 && (
-              <Card className="col-span-full p-8 text-center text-green-300/60 bg-black/20">
-                No attack reports to display
-              </Card>
-            )}
-          </div>
-        )}
-      </main>
+        </main>
+      </div>
     </div>
-  );
-} 
+  )
+}
+

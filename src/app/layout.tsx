@@ -1,26 +1,15 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Cyber AI Attack Reports",
-  description: "Real-time security monitoring and attack report visualization",
-};
+import "./globals.css"
+import type React from "react"
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-background">
-          {children}
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
-  );
-} 
+  )
+}
+
