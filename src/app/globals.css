@@ -1,8 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 3px;
+  width: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -10,8 +11,8 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #ff29a8;
-  border-radius: 1.5px;
+  background: #FF29A8;
+  border-radius: 1px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-button,
@@ -20,8 +21,10 @@
 }
 
 /* For Firefox */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #ff29a8 transparent;
+@-moz-document url-prefix() {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #FF29A8 transparent;
+  }
 }
 
