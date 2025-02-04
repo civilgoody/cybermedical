@@ -3,13 +3,26 @@ import { AlertTriangle, Clock, ChevronDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 interface AttackReportProps {
-  timestamp: string
-  severity: "Low" | "Medium" | "High"
+  created_at: string
+  severity: "low" | "medium" | "high" | "critical"
   description: string
   analysis: string
 }
 
-export function AttackReport({ timestamp, severity, description, analysis }: AttackReportProps) {
+export function AttackReport({ created_at, severity, description, analysis }: AttackReportProps) {
+  // Format the date
+  const formattedDate = new Date(created_at).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  });
+
+  // Capitalize severity for display
+  const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1);
+
   return (
     <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl">
       <div className="flex items-start justify-between mb-4">
@@ -18,13 +31,13 @@ export function AttackReport({ timestamp, severity, description, analysis }: Att
           <span className="text-white text-base">Attack Report</span>
         </div>
         <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
-          {severity}
+          {displaySeverity}
         </Badge>
       </div>
 
       <div className="flex items-center gap-2 mb-4 text-[#666666]">
         <Clock className="w-4 h-4" />
-        <span className="text-sm">{timestamp}</span>
+        <span className="text-sm">{formattedDate}</span>
       </div>
 
       <div className="space-y-4">
@@ -35,7 +48,7 @@ export function AttackReport({ timestamp, severity, description, analysis }: Att
 
         <div>
           <h4 className="text-[#FF29A8] text-base mb-1">AI Analysis</h4>
-          <p className="text-white text-sm">{analysis}</p>
+          <p className="text-white text-sm line-clamp-3">{analysis}</p>
         </div>
 
         <button className="flex items-center gap-1 text-[#666666] text-sm hover:text-[#888888] transition-colors">
