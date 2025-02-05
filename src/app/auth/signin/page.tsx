@@ -139,29 +139,14 @@ export default function SignIn() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={() => signIn('google', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
+              className="flex items-center gap-2 px-6 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
             >
               <FcGoogle className="w-5 h-5" />
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => signIn('facebook', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
-            >
-              <FaFacebook className="w-5 h-5 text-[#1877F2]" />
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => signIn('apple', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
-            >
-              <FaApple className="w-5 h-5 text-foreground" />
+              <span className="text-foreground">Sign in with Google</span>
             </button>
           </div>
         </div>

@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { Card } from "@/components/ui/card";
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook, FaApple } from 'react-icons/fa';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 const signUpSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   password: z.string()
     .min(8, 'Password must be at least 8 characters long')
@@ -30,6 +30,7 @@ const signUpSchema = z.object({
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,7 +43,7 @@ export default function SignUp() {
     
     try {
       // Validate form data
-      const formData = { email, password, confirmPassword };
+      const formData = { name, email, password, confirmPassword };
       signUpSchema.parse(formData);
 
       setLoading(true);
@@ -51,6 +52,11 @@ export default function SignUp() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            name
+          }
+        }
       });
 
       if (authError) throw authError;
@@ -63,6 +69,7 @@ export default function SignUp() {
             {
               id: authData.user.id,
               email: authData.user.email,
+              name: name,
               password_hash: '', // We don't store the actual password, Supabase Auth handles this
             }
           ]);
@@ -106,7 +113,26 @@ export default function SignUp() {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            
+            <label htmlFor="name" className="block text-sm font-medium text-muted mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+              }}
+              className={`w-full px-3 py-2 bg-[#1A1A1A] border ${errors.name ? 'border-red-500' : 'border-border'} rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
+              required
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+            )}
+          </div>
+
+          <div>
             <label htmlFor="email" className="block text-sm font-medium text-muted mb-1">
               Email
             </label>
@@ -186,29 +212,14 @@ export default function SignUp() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={() => signIn('google', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
+              className="flex items-center gap-2 px-6 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
             >
               <FcGoogle className="w-5 h-5" />
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => signIn('facebook', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
-            >
-              <FaFacebook className="w-5 h-5 text-[#1877F2]" />
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => signIn('apple', { callbackUrl: '/' })}
-              className="flex justify-center items-center px-4 py-2 border border-border rounded-md hover:bg-[#1A1A1A] transition-colors"
-            >
-              <FaApple className="w-5 h-5 text-foreground" />
+              <span className="text-foreground">Sign up with Google</span>
             </button>
           </div>
         </div>

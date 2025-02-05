@@ -1,16 +1,17 @@
 'use client';
 
-import { Bell, Settings, Search, ChevronDown } from "lucide-react"
+import { Bell, Settings, Search, ChevronDown, LogOut } from "lucide-react"
 import { ThreatReportSection } from "../components/threat-report-section"
 import NetworkTrafficChart from "../components/network-traffic-chart"
 import ThreatMap from "../components/threat-map"
 import ThreatTypeChart from "../components/threat-type-chart"
-import Sidebar from "../components/sidebar"
 import Image from "next/image"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { redirect } from "next/navigation"
+import { useState } from "react"
 
 export default function Dashboard() {
+  const [showDropdown, setShowDropdown] = useState(false);
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -25,6 +26,10 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/auth/signin' });
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -74,29 +79,46 @@ export default function Dashboard() {
               <Settings className="w-5 h-5 text-muted" />
             </button>
           </div>
-          <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2">
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                alt="Profile"
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-primary text-foreground flex items-center justify-center">
-                {session?.user?.email?.[0].toUpperCase()}
+          <div className="relative">
+            <button 
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2"
+            >
+              {session?.user?.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="Profile"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-primary text-foreground flex items-center justify-center">
+                  {session?.user?.email?.[0].toUpperCase()}
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <div>
+                  <div className="text-sm font-medium text-foreground">
+                    {session?.user?.name || session?.user?.email?.split('@')[0]}
+                  </div>
+                  <div className="text-xs text-muted">{session?.user?.email}</div>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-muted transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+              </div>
+            </button>
+
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-md shadow-lg py-1 border border-border">
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-background transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign out
+                </button>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <div>
-                <div className="text-sm font-medium text-foreground">
-                  {session?.user?.name || session?.user?.email?.split('@')[0]}
-                </div>
-                <div className="text-xs text-muted">{session?.user?.email}</div>
-              </div>
-              <ChevronDown className="w-4 h-4 text-muted" />
-            </div>
           </div>
         </div>
       </header>
