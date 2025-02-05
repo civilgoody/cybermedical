@@ -4,17 +4,15 @@ import NetworkTrafficChart from "../components/network-traffic-chart"
 import ThreatMap from "../components/threat-map"
 import ThreatTypeChart from "../components/threat-type-chart"
 import Sidebar from "../components/sidebar"
-
+import Image from "next/image"
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-black">
       {/* Top Navigation */}
       <header className="h-16 px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <button className="p-2 rounded-full bg-[#1A1A1A]">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-[#666666]">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button className="p-2 ">
+            <Image src="/cyber-logo.png" alt="Cyber Logo" width={48} height={48} />
           </button>
           <nav className="flex items-center gap-6 bg-[#1A1A1A] rounded-full px-4 py-2">
             <button className="bg-[#FF29A8] text-white px-4 py-1.5 rounded-md text-sm flex items-center gap-2">
@@ -74,8 +72,6 @@ export default function Dashboard() {
       </header>
 
       <div className="flex">
-        <Sidebar />
-
         <main className="flex-1 p-6">
           <h1 className="text-2xl font-semibold text-white mb-6">Dashboard</h1>
 
