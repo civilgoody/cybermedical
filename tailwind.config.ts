@@ -21,6 +21,7 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         background: "#141414",
         foreground: "white",
+        cta: "linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%)",
         muted: {
           DEFAULT: "#666666",
           foreground: "#888888"
