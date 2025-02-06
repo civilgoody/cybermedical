@@ -1,7 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+:root {
+  --radius: 1.5rem;
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 2px;
 }
@@ -26,5 +28,9 @@
     scrollbar-width: thin;
     scrollbar-color: #FF29A8 transparent;
   }
+}
+
+.bg-custom-gradient {
+  background: linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%);
 }
 
