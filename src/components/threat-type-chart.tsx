@@ -13,7 +13,7 @@ const data: ChartData<"doughnut"> = {
       data: [82, 46, 10],
       backgroundColor: ["#8B5CF6", "#FF29A8", "#6EE7B7"],
       borderWidth: 0,
-      spacing: 2,
+      spacing: 2
     },
   ],
   labels: ["Malware", "Phishing", "DDoS"],
@@ -34,7 +34,7 @@ const options = {
 
 export default function ThreatTypeChart() {
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl h-[320px]">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-white">Threat Type</h3>
         <button className="text-[#666666] hover:text-[#888888] transition-colors">
@@ -42,8 +42,8 @@ export default function ThreatTypeChart() {
         </button>
       </div>
 
-      <div className="relative h-[200px]">
-        <Doughnut data={data} options={options} />
+      <div className="relative h-[200px] pb-8">
+        <Doughnut data={data} options={options} className="h-4" />
         {/* Center count */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
