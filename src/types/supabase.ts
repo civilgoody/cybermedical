@@ -6,6 +6,18 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type ThreatType =
+  | "DDoS"
+  | "Phishing"
+  | "SQL Injection"
+  | "XSS"
+  | "Malware Infection"
+  | "Ransomware"
+  | "Brute Force Attack"
+  | "Man-in-the-Middle"
+  | "Zero-Day Exploit"
+  | "Insider Threat"
+
 export interface Database {
   public: {
     Tables: {
@@ -16,6 +28,7 @@ export interface Database {
           severity: 'low' | 'medium' | 'high' | 'critical'
           description: string
           analysis: string
+          type: ThreatType
         }
         Insert: {
           id?: string
@@ -23,6 +36,7 @@ export interface Database {
           severity: 'low' | 'medium' | 'high' | 'critical'
           description: string
           analysis: string
+          type: ThreatType
         }
         Update: {
           id?: string
@@ -30,6 +44,7 @@ export interface Database {
           severity?: 'low' | 'medium' | 'high' | 'critical'
           description?: string
           analysis?: string
+          type?: ThreatType
         }
       }
     }

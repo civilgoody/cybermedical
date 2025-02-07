@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card"
 import { MoreVertical } from "lucide-react"
 import { AttackReport } from "./attack-report"
+import { ThreatType } from '@/types/supabase';
 
 interface Report {
   created_at: string;
   severity: "low" | "medium" | "high" | "critical";
+  type: ThreatType;
   description: string;
   analysis: string;
 }

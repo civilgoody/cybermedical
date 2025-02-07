@@ -7,9 +7,10 @@ interface AttackReportProps {
   severity: "low" | "medium" | "high" | "critical"
   description: string
   analysis: string
+  type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
 }
 
-export function AttackReport({ created_at, severity, description, analysis }: AttackReportProps) {
+export function AttackReport({ created_at, severity, description, analysis, type }: AttackReportProps) {
   // Format the date
   const formattedDate = new Date(created_at).toLocaleString('en-US', {
     month: 'short',
@@ -22,6 +23,8 @@ export function AttackReport({ created_at, severity, description, analysis }: At
 
   // Capitalize severity for display
   const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1);
+  // Capitalize threat type for display
+  const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Unknown';
 
   return (
     <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl">
@@ -30,9 +33,14 @@ export function AttackReport({ created_at, severity, description, analysis }: At
           <AlertTriangle className="w-5 h-5 text-white" />
           <span className="text-white text-base">Attack Report</span>
         </div>
-        <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
-          {displaySeverity}
-        </Badge>
+        <div className="flex gap-2">
+          <Badge variant="outline" className="bg-red-500 text-white border-red-500 rounded-md px-3 py-0.5">
+            {displayType}
+          </Badge>
+          <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
+            {displaySeverity}
+          </Badge>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-4 text-[#666666]">

@@ -139,6 +139,7 @@ export default function SeverityBreakdownChart() {
                   color: "#fff"
                 }}
                 labelStyle={{ color: "#666666" }}
+                cursor={{ fill: "#141414" }}
               />
               <Legend 
                 iconType="circle"

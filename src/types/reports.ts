@@ -3,5 +3,6 @@ export interface AttackReport {
   created_at: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   description: string;
+  type: string;
   analysis: string;
 } 
