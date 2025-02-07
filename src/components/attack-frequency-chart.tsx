@@ -71,7 +71,7 @@ export default function AttackFrequencyChart() {
   }, [timeframe]);
 
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl relative overflow-hidden">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl relative overflow-hidden h-[420px]">
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-purple-900/20" />
 
       <div className="relative">

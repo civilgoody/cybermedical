@@ -34,7 +34,7 @@ export function AttackReport({ created_at, severity, description, analysis, type
           <span className="text-white text-base">Attack Report</span>
         </div>
         <div className="flex gap-2">
-          <Badge variant="outline" className="bg-red-500 text-white border-red-500 rounded-md px-3 py-0.5">
+          <Badge variant="outline" className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5">
             {displayType}
           </Badge>
           <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
