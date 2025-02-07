@@ -5,9 +5,12 @@ import { MoreVertical } from "lucide-react"
 import { AttackReport } from "./attack-report"
 import { ThreatType } from '@/types/supabase';
 
+const refreshInterval = 60000;
+
 interface Report {
   created_at: string;
   severity: "low" | "medium" | "high" | "critical";
+
   type: ThreatType;
   description: string;
   analysis: string;
@@ -35,10 +38,13 @@ export function ThreatReportSection() {
       setLoading(false);
     }
     fetchReports();
+    const interval = setInterval(fetchReports, refreshInterval);
+    return () => clearInterval(interval);
   }, []);
 
+
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[760px]">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[820px]">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-white">AI Threat Report</h2>
         <button className="text-[#666666] hover:text-[#888888] transition-colors">

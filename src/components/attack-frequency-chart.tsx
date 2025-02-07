@@ -71,7 +71,7 @@ export default function AttackFrequencyChart() {
   }, [timeframe]);
 
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl relative overflow-hidden h-[420px]">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl relative overflow-hidden h-[400px]">
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-purple-900/20" />
 
       <div className="relative">
@@ -97,10 +97,11 @@ export default function AttackFrequencyChart() {
           </div>
         </div>
 
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <XAxis
+
                 dataKey="hour"
                 axisLine={false}
                 tickLine={false}
