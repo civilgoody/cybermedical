@@ -29,7 +29,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Insert into Supabase using admin client
     const { data, error } = await (await supabase()).from('attack_reports')
 
       .insert({
