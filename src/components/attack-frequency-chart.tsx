@@ -1,0 +1,138 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { Card } from "@/components/ui/card"
+import { ChevronDown } from "lucide-react"
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { supabase } from "@/utils/supabase/client"
+
+type AttackData = {
+  hour: string;
+  count: number;
+}
+
+export default function AttackFrequencyChart() {
+  const [data, setData] = useState<AttackData[]>([]);
+  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
+
+  useEffect(() => {
+    const fetchAttackData = async () => {
+      let query = supabase()
+        .from('attack_reports')
+        .select('created_at');
+
+      // Add time constraints based on timeframe
+      const now = new Date();
+      let startTime;
+      switch (timeframe) {
+        case '7d':
+          startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case '30d':
+          startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        default: // 24h
+          startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      }
+
+      query = query.gte('created_at', startTime.toISOString());
+      const { data: attacks, error } = await query;
+
+      if (error) {
+        console.error('Error fetching attack data:', error);
+        return;
+      }
+
+      // Process data into hourly buckets
+      const hourlyData = new Map<string, number>();
+      
+      attacks?.forEach(attack => {
+        const date = new Date(attack.created_at);
+        const hourKey = date.toLocaleString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: 'numeric'
+        });
+        hourlyData.set(hourKey, (hourlyData.get(hourKey) || 0) + 1);
+      });
+
+      // Convert to array and sort by time
+      const chartData = Array.from(hourlyData.entries())
+        .map(([hour, count]) => ({ hour, count }))
+        .sort((a, b) => new Date(a.hour).getTime() - new Date(b.hour).getTime());
+
+      setData(chartData);
+    };
+
+    fetchAttackData();
+    // Set up polling every minute
+    const interval = setInterval(fetchAttackData, 60000);
+    return () => clearInterval(interval);
+  }, [timeframe]);
+
+  return (
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-purple-900/20" />
+
+      <div className="relative">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h3 className="text-xl font-semibold text-white">Attack Frequency</h3>
+            <p className="text-sm text-[#666666]">Number of attacks over time</p>
+          </div>
+          <div className="flex gap-2">
+            {(['24h', '7d', '30d'] as const).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                className={`px-3 py-1 rounded-full text-sm ${
+                  timeframe === tf 
+                    ? 'bg-primary text-white' 
+                    : 'bg-[#1A1A1A] text-[#666666] hover:text-white transition-colors'
+                }`}
+              >
+                {tf}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <XAxis
+                dataKey="hour"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#666666", fontSize: 12 }}
+                dy={10}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#666666", fontSize: 12 }}
+                tickFormatter={(value) => `${value}`}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1A1A1A",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "#fff"
+                }}
+                labelStyle={{ color: "#666666" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#FF29A8"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </Card>
+  )
+} 
