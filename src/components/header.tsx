@@ -12,8 +12,8 @@ import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 export function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+
 
   useEffect(() => {
     const getSession = async () => {
@@ -22,7 +22,7 @@ export function Header() {
       } = await supabase().auth.getSession();
       setSession(currentSession);
       if (currentSession) {
-        setIsLoading(false);
+        router.push('/');
       } else {
         router.push('/login');
       }
@@ -50,14 +50,6 @@ export function Header() {
     router.refresh();
   };
 
-  // Show a loading screen while checking the session.
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -121,10 +113,11 @@ export function Header() {
             <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-md shadow-lg py-1 border border-border">
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-background transition-colors"
+                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground transition-colors hover:text-primary"
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
+
               </button>
             </div>
           )}
