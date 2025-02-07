@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from "@/components/ui/card";
 import { FcGoogle } from 'react-icons/fc';
@@ -8,12 +8,15 @@ import { supabase } from '@/utils/supabase/client';
 
 export default function SignIn() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function checkSession() {
       const { data: { session } } = await supabase().auth.getSession();
       if (session) {
-        router.replace('/'); // Change to your desired authenticated route
+        router.replace('/');
+      } else {
+        setIsLoading(false);
       }
     }
     checkSession();
@@ -40,10 +43,18 @@ export default function SignIn() {
     }
   };
 
-  return (
+  return isLoading ?
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+    </div>
+    :
+    (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-background border-border p-8 rounded-xl">
+
+
         <h1 className="text-2xl font-bold text-foreground mb-6 text-center">Sign In</h1>
+
         
         <button
           onClick={handleGoogleSignIn}
@@ -54,5 +65,5 @@ export default function SignIn() {
         </button>
       </Card>
     </div>
-  );
+  ) 
 } 

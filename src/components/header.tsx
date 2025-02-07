@@ -12,17 +12,25 @@ import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 export function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: { session: currentSession } } = await supabase().auth.getSession();
+      const {
+        data: { session: currentSession },
+      } = await supabase().auth.getSession();
       setSession(currentSession);
+      if (currentSession) {
+        setIsLoading(false);
+      }
     };
 
     getSession();
 
-    const { data: { subscription } } = supabase().auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+    const {
+      data: { subscription },
+    } = supabase().auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       setSession(session);
     });
 
@@ -38,6 +46,15 @@ export function Header() {
     router.push('/login');
     router.refresh();
   };
+
+  // Show a loading screen while checking the session.
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -62,7 +79,7 @@ export function Header() {
         {/* Profile/Region Section */}
         <div className="relative">
           {session ? (
-            <button 
+            <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2"
             >
@@ -90,13 +107,12 @@ export function Header() {
               </div>
             </button>
           ) : (
-              <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">
-                <Image src="/uk-flag.png" alt="UK Flag" width={24} height={24} />
-                <span className="text-sm text-foreground">United Kingdom</span>
-                <ChevronDown className="w-4 h-4 text-muted" />
-              </button>
+            <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">
+              <Image src="/uk-flag.png" alt="UK Flag" width={24} height={24} />
+              <span className="text-sm text-foreground">United Kingdom</span>
+              <ChevronDown className="w-4 h-4 text-muted" />
+            </button>
           )}
-
 
           {showDropdown && session && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-md shadow-lg py-1 border border-border">
