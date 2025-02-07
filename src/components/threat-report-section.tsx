@@ -36,7 +36,7 @@ export function ThreatReportSection() {
   }, []);
 
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[800px]">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[760px]">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-white">AI Threat Report</h2>
         <button className="text-[#666666] hover:text-[#888888] transition-colors">

@@ -43,7 +43,7 @@ export function AttackReport({ created_at, severity, description, analysis }: At
       <div className="space-y-4">
         <div>
           <h4 className="text-[#FF29A8] text-base mb-1">Description</h4>
-          <p className="text-white text-sm">{description}</p>
+          <p className="text-white text-sm line-clamp-1">{description}</p>
         </div>
 
         <div>

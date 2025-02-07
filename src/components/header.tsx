@@ -93,13 +93,14 @@ export function Header() {
               )}
               <div className="flex items-center gap-2">
                 <div>
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="text-sm font-medium text-foreground text-ellipsis overflow-hidden whitespace-nowrap max-w-24">
                     {session.user?.user_metadata?.name || session.user?.email?.split('@')[0]}
                   </div>
-                  <div className="text-xs text-muted">{session.user?.email}</div>
+                  <div className="text-xs text-muted text-ellipsis overflow-hidden whitespace-nowrap max-w-28">{session.user?.email}</div>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-muted transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
               </div>
+
             </button>
           ) : (
             <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">

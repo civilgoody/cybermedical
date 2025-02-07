@@ -138,3 +138,9 @@ For support:
 ## License
 
 This project is proprietary and confidential. Unauthorized copying or distribution is prohibited.
+
+## Tasks
+1. Pagination and refresh button for the reports
+2. Profile Page
+3. 2FA
+4. Wirepackets
