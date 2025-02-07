@@ -31,8 +31,8 @@ export default function AuthCallback() {
         }
         
         // Redirect to the dashboard after successful authentication
-        router.refresh();
         router.push('/');
+        router.refresh();
       } catch (error) {
         console.error('Error during auth callback:', error);
         router.push('/login');

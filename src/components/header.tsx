@@ -1,55 +1,45 @@
 import { ChevronDown, LogOut } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { NavMenu } from "./nav-menu"
 import { UtilityButtons } from "./utility-buttons"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { supabase } from "@/utils/supabase/client"
-import { useEffect } from "react"
-import { Session, AuthChangeEvent } from '@supabase/supabase-js'
+import { Session, AuthChangeEvent } from "@supabase/supabase-js"
 
 export function Header() {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
-  const router = useRouter();
-
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [session, setSession] = useState<Session | null>(null)
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session: currentSession },
-      } = await supabase().auth.getSession();
-      setSession(currentSession);
-      if (currentSession) {
-        router.push('/');
-      } else {
-        router.push('/login');
+    async function getSession() {
+      const { data: { session: currentSession } } = await supabase().auth.getSession()
+      setSession(currentSession)
+      // Do not trigger router.push here—instead, let the pages or middleware handle redirection.
+    }
+    getSession()
+
+    const { data: { subscription } } = supabase().auth.onAuthStateChange(
+      (event: AuthChangeEvent, session: Session | null) => {
+        setSession(session)
       }
-    };
+    )
 
-
-    getSession();
-
-    const {
-      data: { subscription },
-    } = supabase().auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleSignOut = async () => {
-    const { error } = await supabase().auth.signOut();
+    const { error } = await supabase().auth.signOut()
     if (error) {
-      console.error('Error signing out:', error);
-      return;
+      console.error("Error signing out:", error)
+      return
     }
-    router.push('/login');
-    router.refresh();
-  };
-
+    router.push("/login")
+    router.refresh()
+  }
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -94,13 +84,16 @@ export function Header() {
               <div className="flex items-center gap-2">
                 <div>
                   <div className="text-sm font-medium text-foreground text-ellipsis overflow-hidden whitespace-nowrap max-w-24">
-                    {session.user?.user_metadata?.name || session.user?.email?.split('@')[0]}
+                    {session.user?.user_metadata?.name || session.user?.email?.split("@")[0]}
                   </div>
-                  <div className="text-xs text-muted text-ellipsis overflow-hidden whitespace-nowrap max-w-28">{session.user?.email}</div>
+                  <div className="text-xs text-muted text-ellipsis overflow-hidden whitespace-nowrap max-w-28">
+                    {session.user?.email}
+                  </div>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-muted transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`w-4 h-4 text-muted transition-transform ${showDropdown ? "rotate-180" : ""}`}
+                />
               </div>
-
             </button>
           ) : (
             <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">
@@ -118,12 +111,11 @@ export function Header() {
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
-
               </button>
             </div>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 } 

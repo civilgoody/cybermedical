@@ -14,7 +14,9 @@ export default function SignIn() {
     async function checkSession() {
       const { data: { session } } = await supabase().auth.getSession();
       if (session) {
-        router.replace('/');
+        setTimeout(() => {
+          router.replace('/');
+        }, 100);
       } else {
         setIsLoading(false);
       }
