@@ -31,11 +31,11 @@ export default function AuthCallback() {
         }
         
         // Redirect to the dashboard after successful authentication
-        router.push('/');
         router.refresh();
+        router.push('/');
       } catch (error) {
         console.error('Error during auth callback:', error);
-        router.push('/auth/signin');
+        router.push('/login');
       }
     };
 

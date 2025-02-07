@@ -35,7 +35,7 @@ export function Header() {
       console.error('Error signing out:', error);
       return;
     }
-    router.push('/auth/signin');
+    router.push('/login');
     router.refresh();
   };
 
