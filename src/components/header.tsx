@@ -23,8 +23,11 @@ export function Header() {
       setSession(currentSession);
       if (currentSession) {
         setIsLoading(false);
+      } else {
+        router.push('/login');
       }
     };
+
 
     getSession();
 
