@@ -1,17 +1,42 @@
 import { ChevronDown, LogOut } from "lucide-react"
 import Image from "next/image"
-import { useSession, signOut } from "next-auth/react"
 import { useState } from "react"
 import Link from "next/link"
 import { NavMenu } from "./nav-menu"
 import { UtilityButtons } from "./utility-buttons"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/utils/supabase/client"
+import { useEffect } from "react"
+import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 
 export function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { data: session, status } = useSession();
+  const [session, setSession] = useState<Session | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session: currentSession } } = await supabase().auth.getSession();
+      setSession(currentSession);
+    };
+
+    getSession();
+
+    const { data: { subscription } } = supabase().auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/auth/signin' });
+    const { error } = await supabase().auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+      return;
+    }
+    router.push('/auth/signin');
+    router.refresh();
   };
 
   return (
@@ -22,7 +47,6 @@ export function Header() {
           <Image src="/cyber-logo.png" alt="Cyber Logo" width={48} height={48} />
         </Link>
       </div>
-
 
       {/* Center Navigation - Only show when signed in */}
       {session && (
@@ -42,9 +66,9 @@ export function Header() {
               onClick={() => setShowDropdown(!showDropdown)}
               className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2"
             >
-              {session.user?.image ? (
+              {session.user?.user_metadata?.avatar_url ? (
                 <Image
-                  src={session.user.image}
+                  src={session.user.user_metadata.avatar_url}
                   alt="Profile"
                   width={32}
                   height={32}
@@ -58,7 +82,7 @@ export function Header() {
               <div className="flex items-center gap-2">
                 <div>
                   <div className="text-sm font-medium text-foreground">
-                    {session.user?.name || session.user?.email?.split('@')[0]}
+                    {session.user?.user_metadata?.name || session.user?.email?.split('@')[0]}
                   </div>
                   <div className="text-xs text-muted">{session.user?.email}</div>
                 </div>
@@ -66,12 +90,13 @@ export function Header() {
               </div>
             </button>
           ) : (
-            <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">
-              <Image src="/uk-flag.png" alt="UK Flag" width={24} height={24} />
-              <span className="text-sm text-foreground">United Kingdom</span>
-              <ChevronDown className="w-4 h-4 text-muted" />
-            </button>
+              <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-4 py-2">
+                <Image src="/uk-flag.png" alt="UK Flag" width={24} height={24} />
+                <span className="text-sm text-foreground">United Kingdom</span>
+                <ChevronDown className="w-4 h-4 text-muted" />
+              </button>
           )}
+
 
           {showDropdown && session && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-md shadow-lg py-1 border border-border">

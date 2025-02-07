@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/utils/supabase/server';
 import type { Database } from '@/types/supabase';
 
 export async function POST(request: Request) {
-  if (!supabaseAdmin) {
+  if (!supabase) {
     return NextResponse.json(
       { error: 'Database connection not configured' },
       { status: 500 }
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     }
 
     // Insert into Supabase using admin client
-    const { data, error } = await supabaseAdmin
-      .from('attack_reports')
+    const { data, error } = await (await supabase()).from('attack_reports')
+
       .insert({
         severity: report.severity,
         description: report.description,
@@ -54,19 +54,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  if (!supabaseAdmin) {
+  if (!supabase) {
     return NextResponse.json(
       { error: 'Database connection not configured' },
       { status: 500 }
+
     );
   }
 
   try {
-    const { data, error } = await supabaseAdmin
-      .from('attack_reports')
+    const { data, error } = await (await supabase()).from('attack_reports')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(100);
+
 
     if (error) throw error;
 
