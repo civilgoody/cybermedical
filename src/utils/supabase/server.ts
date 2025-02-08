@@ -45,4 +45,4 @@ const supaAdmin = createClient(
   }
 )
 const supabaseAdmin = supaAdmin.auth.admin
-export { supabaseAdmin, supaAdmin }
+export { supabaseAdmin }

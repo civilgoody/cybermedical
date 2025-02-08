@@ -18,9 +18,28 @@ export type ThreatType =
   | "Zero-Day Exploit"
   | "Insider Threat"
 
-export interface Database {
+export type Profile = {
+  id: string
+  first_name: string | null
+  last_name: string | null
+  phone: string | null
+  bio: string | null
+  city: string | null
+  country: string | null
+  post_code: string | null
+  role: 'user' | 'admin'
+  updated_at: string
+  created_at: string
+}
+
+export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: Profile
+        Insert: Omit<Profile, 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>
+      }
       attack_reports: {
         Row: {
           id: string
