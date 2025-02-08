@@ -10,12 +10,25 @@ export default function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
+    // Check initial session
     supabase().auth.getSession().then(({ data: { session } }) => {
       if (session) {
         router.replace('/');
-        router.refresh();
       }
     });
+
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase().auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        router.replace('/');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [router]);
 
   const handleGoogleSignIn = async () => {
