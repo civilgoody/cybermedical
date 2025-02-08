@@ -14,10 +14,12 @@ export default function SignIn() {
     async function checkSession() {
       const { data: { session } } = await supabase().auth.getSession();
       if (session) {
+        console.log('session', session);
         setTimeout(() => {
           router.replace('/');
         }, 100);
       } else {
+        console.log('no session');
         setIsLoading(false);
       }
     }
