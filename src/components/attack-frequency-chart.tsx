@@ -124,9 +124,11 @@ export default function AttackFrequencyChart() {
                   backgroundColor: "#1A1A1A",
                   border: "none",
                   borderRadius: "8px",
-                  color: "#fff"
+                  color: "#fff",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
                 }}
                 labelStyle={{ color: "#666666" }}
+                cursor={{ stroke: "#666666", strokeWidth: 1, strokeDasharray: "4 4" }}
               />
               <Line
                 type="monotone"
@@ -134,6 +136,12 @@ export default function AttackFrequencyChart() {
                 stroke="#FF29A8"
                 strokeWidth={2}
                 dot={false}
+                activeDot={{ 
+                  r: 6, 
+                  fill: "#FF29A8",
+                  stroke: "#141414",
+                  strokeWidth: 2
+                }}
               />
             </LineChart>
           </ResponsiveContainer>
