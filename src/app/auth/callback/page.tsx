@@ -1,49 +1,32 @@
-'use client';
+import { NextResponse } from 'next/server'
+import { supaAdmin } from '@/utils/supabase/server'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabase/client';
 
-export default function AuthCallback() {
-  const router = useRouter();
 
-  useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        const { data: { session }, error } = await supabase().auth.getSession();
-        if (error) throw error;
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/'
 
-        if (session?.user) {
-          // Create or update user record in users table
-          const { error: dbError } = await supabase()
-            .from('users')
-            .upsert({
-              id: session.user.id,
-              email: session.user.email,
-              name: session.user.user_metadata.name || session.user.email?.split('@')[0],
-              last_sign_in: new Date().toISOString(),
-            }, {
-              onConflict: 'id'
-            });
+  if (code) {
+    const { error } = await supaAdmin.auth.exchangeCodeForSession(code)
+    if (!error) {
+      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
 
-          if (dbError) throw dbError;
-        }
-        
-        // Redirect to the dashboard after successful authentication
-        router.push('/');
-        router.refresh();
-      } catch (error) {
-        console.error('Error during auth callback:', error);
-        router.push('/login');
+
+      const isLocalEnv = process.env.NODE_ENV === 'development'
+      if (isLocalEnv) {
+        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+        return NextResponse.redirect(`${origin}${next}`)
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+      } else {
+        return NextResponse.redirect(`${origin}${next}`)
       }
-    };
+    }
+  }
 
-    handleAuthCallback();
-  }, [router]);
-
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="text-white">Completing sign in...</div>
-    </div>
-  );
-} 
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+}
