@@ -20,15 +20,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// Define a schema for your profile form.
+// Updated schema with maximum length limits on all fields.
 const profileFormSchema = z.object({
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
-  phone: z.string().optional(),
-  bio: z.string().optional(),
-  country: z.string().optional(),
-  city: z.string().optional(),
-  post_code: z.string().optional(),
+  first_name: z
+    .string()
+    .min(1, "First name is required")
+    .max(50, "First name must be 50 characters or less"),
+  last_name: z
+    .string()
+    .min(1, "Last name is required")
+    .max(50, "Last name must be 50 characters or less"),
+  phone: z.string().max(20, "Phone number must be 20 characters or less").optional(),
+  bio: z.string().max(160, "Bio must be 160 characters or less").optional(),
+  country: z.string().max(50, "Country must be 50 characters or less").optional(),
+  city: z.string().max(50, "City must be 50 characters or less").optional(),
+  post_code: z.string().max(15, "Post Code must be 15 characters or less").optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -78,21 +84,24 @@ export default function ProfileEditModal({
   }, [profile, reset]);
 
   const onSubmit = async (data: ProfileFormValues) => {
-    const { error } = await supabase()
+    const { data: updatedProfile, error } = await supabase()
       .from("profiles")
       .update(data)
-      .eq("id", profile?.id);
+      .eq("id", profile?.id)
+      .select("*")
+      .single();
 
     if (error) {
       console.error("Error updating profile:", error);
     } else {
+      // Update the form with the newly returned data and refresh the global profile.
+      reset(updatedProfile);
       await reloadProfile();
-      // Close the modal after a successful save.
       setDialogOpen(false);
     }
   };
 
-  // Use internal state if external props are not provided.
+  // Allow external control over open state, or fall back to internal state.
   const [internalOpen, setInternalOpen] = useState(false);
   const dialogOpen = openProp !== undefined ? openProp : internalOpen;
   const setDialogOpen = onOpenChangeProp !== undefined
@@ -138,12 +147,20 @@ export default function ProfileEditModal({
               Phone
             </label>
             <Input {...register("phone")} placeholder="Phone Number" />
+            {errors.phone && (
+              <p className="text-red-500 text-sm">
+                {errors.phone.message}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground">
               Bio
             </label>
             <Textarea {...register("bio")} placeholder="Your bio" />
+            {errors.bio && (
+              <p className="text-red-500 text-sm">{errors.bio.message}</p>
+            )}
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -151,18 +168,31 @@ export default function ProfileEditModal({
                 Country
               </label>
               <Input {...register("country")} placeholder="Country" />
+              {errors.country && (
+                <p className="text-red-500 text-sm">
+                  {errors.country.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
                 City
               </label>
               <Input {...register("city")} placeholder="City" />
+              {errors.city && (
+                <p className="text-red-500 text-sm">{errors.city.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">
                 Post Code
               </label>
               <Input {...register("post_code")} placeholder="Post Code" />
+              {errors.post_code && (
+                <p className="text-red-500 text-sm">
+                  {errors.post_code.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-4">

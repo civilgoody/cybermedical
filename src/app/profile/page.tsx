@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
@@ -13,29 +13,38 @@ export default function ProfilePage() {
   const [session, setSession] = useState<any>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  useEffect(() => {
-    async function loadProfile() {
-      const { data: { session: currentSession } } = await supabase().auth.getSession();
-      if (!currentSession) return;
+  // Wrap loadProfile in useCallback so it can be used as dependency.
+  const loadProfile = useCallback(async () => {
+    const { data: { session: currentSession } } = await supabase().auth.getSession();
+    if (!currentSession) return;
+    
+    setSession(currentSession);
+    
+    const { data, error } = await supabase()
+      .from('profiles')
+      .select('*')
+      .eq('id', currentSession.user.id)
+      .single();
       
-      setSession(currentSession);
-      
-      const { data, error } = await supabase()
-        .from('profiles')
-        .select('*')
-        .eq('id', currentSession.user.id)
-        .single();
-        
-      if (error) {
-        console.error('Error loading profile:', error);
-        return;
-      }
-      
-      setProfile(data);
+    if (error) {
+      console.error('Error loading profile:', error);
+      return;
     }
     
-    loadProfile();
+    setProfile(data);
   }, []);
+
+  // Initial profile load.
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  // Reload profile each time the edit modal is closed.
+  useEffect(() => {
+    if (!editModalOpen) {
+      loadProfile();
+    }
+  }, [editModalOpen, loadProfile]);
 
   if (!session || !profile) {
     return (
