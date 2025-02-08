@@ -44,7 +44,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-8">
+    <div className="min-h-screen bg-black p-8 px-32">
       <h1 className="text-2xl font-bold text-white mb-8">My Profile</h1>
 
       {/* Profile Header Card */}
@@ -68,8 +68,14 @@ export default function ProfilePage() {
               <h2 className="text-xl font-semibold text-white">
                 {profile.first_name} {profile.last_name}
               </h2>
-              <p className="text-[#666666]">{profile.role}</p>
-              <p className="text-[#666666]">{profile.city}, {profile.country}</p>
+              <p className="text-[#666666]">{profile.role === 'admin' ? 'Administrator' : 'User'}</p>
+              <p className="text-[#666666]">
+                {(profile.city || profile.country)
+                  ? (profile.city && profile.country
+                      ? `${profile.city}, ${profile.country}`
+                      : profile.city || profile.country)
+                  : 'Location not set'}
+              </p>
             </div>
           </div>
           <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors">
