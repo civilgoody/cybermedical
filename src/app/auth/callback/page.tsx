@@ -21,7 +21,6 @@ export default function AuthCallback() {
               id: session.user.id,
               email: session.user.email,
               name: session.user.user_metadata.name || session.user.email?.split('@')[0],
-              avatar_url: session.user.user_metadata.avatar_url,
               last_sign_in: new Date().toISOString(),
             }, {
               onConflict: 'id'
