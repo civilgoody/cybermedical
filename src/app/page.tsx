@@ -1,34 +1,37 @@
-'use client';
+"use client";
 
-import { ThreatReportSection } from "../components/threat-report-section"
-import AttackFrequencyChart from "../components/attack-frequency-chart"
-import SeverityBreakdownChart from "../components/severity-breakdown-chart"
-import ThreatTypeChart from "../components/threat-type-chart"
+import { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabase/client";
+import Dashboard from "@/components/Dashboard";
+import Login from "@/components/Login";
 
-export default function Dashboard() {
-  return (
-    <main className="flex-1 p-6">
-      <h1 className="text-2xl font-semibold text-foreground mb-6">Dashboard</h1>
+export default function Home() {
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* AI Threat Report - 4 columns */}
-        <div className="col-span-4">
-          <ThreatReportSection />
-        </div>
+  useEffect(() => {
+    // Check the current session status.
+    supabase().auth.getSession().then(({ data: { session } }) => {
+      setAuthenticated(!!session);
+    });
 
-        {/* Right side content - 8 columns */}
-        <div className="col-span-8 space-y-6">
-          {/* Attack Frequency Chart */}
-          <AttackFrequencyChart />
+    // Listen for auth state changes.
+    const { data: authListener } = supabase().auth.onAuthStateChange(
+      (_, session) => {
+        setAuthenticated(!!session);
+      }
+    );
 
-          {/* Bottom row split into two */}
-          <div className="grid grid-cols-2 gap-6">
-            <SeverityBreakdownChart />
-            <ThreatTypeChart />
-          </div>
-        </div>
+    return () => authListener.subscription.unsubscribe();
+  }, []);
+
+  if (authenticated === null) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        Loading…
       </div>
-    </main>
-  );
+    );
+  }
+
+  return authenticated ? <Dashboard /> : <Login />;
 }
 

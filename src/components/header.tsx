@@ -37,9 +37,10 @@ export function Header() {
       console.error("Error signing out:", error)
       return
     }
-    router.push("/login")
-    router.refresh()
+    router.replace("/")
   }
+
+
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
