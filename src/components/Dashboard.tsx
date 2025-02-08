@@ -1,64 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
-import { supabase } from "@/utils/supabase/client";
+import { useProfile } from "@/context/ProfileContext";
 import { ThreatReportSection } from "./threat-report-section";
 import AttackFrequencyChart from "./attack-frequency-chart";
 import SeverityBreakdownChart from "./severity-breakdown-chart";
 import ThreatTypeChart from "./threat-type-chart";
 
 export default function Dashboard() {
-  useEffect(() => {
-    async function upsertProfile() {
-      // Retrieve the current user
-      const {
-        data: { user },
-      } = await supabase().auth.getUser();
+  const { profileLoaded } = useProfile();
 
-      if (user) {
-        // Attempt to fetch an existing profile using the user's id
-        const { data: profile, error: fetchError } = await supabase()
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.error("Error fetching profile:", fetchError);
-        }
-
-        // Only try to create the profile if it doesn't exist
-        if (!profile) {
-          const metadata = user.user_metadata || {};
-          const fullName = metadata.full_name || metadata.name || "";
-          // Split the full name into parts
-          const nameParts = fullName.trim().split(" ");
-          console.log("nameParts", nameParts);
-          let firstName = nameParts.shift() || "";
-          let lastName = nameParts.join(" ");
-          
-          // Upsert the profile with first and last name
-          const { error: profileError } = await supabase()
-            .from("profiles")
-            .upsert({
-              id: user.id,
-              first_name: firstName,
-              last_name: lastName,
-            });
-
-          if (profileError) {
-            console.error("Error upserting profile:", profileError);
-          } else {
-            console.log("Profile created successfully");
-          }
-        } else {
-          console.log("Profile already exists. Skipping upsert.");
-        }
-      }
-    }
-
-    upsertProfile();
-  }, []);
+  if (!profileLoaded) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+        Saving your profile, please wait...
+      </div>
+    );
+  }
 
   return (
     <main className="flex-1 p-6">

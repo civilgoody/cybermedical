@@ -7,6 +7,7 @@ import { UtilityButtons } from "./utility-buttons"
 import { useRouter, usePathname } from "next/navigation"
 import { supabase } from "@/utils/supabase/client"
 import { Session, AuthChangeEvent } from "@supabase/supabase-js"
+import { useProfile } from "@/context/ProfileContext"
 
 export function Header() {
   const [showDropdown, setShowDropdown] = useState(false)
@@ -39,7 +40,7 @@ export function Header() {
     router.replace("/")
   }
 
-
+  const { profileLoaded, profile } = useProfile();
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -51,7 +52,7 @@ export function Header() {
       </div>
 
       {/* Center Navigation - Only show when signed in */}
-      {session && (
+      {session && profileLoaded && (
         <div className="flex-1 flex justify-center">
           <NavMenu />
         </div>
@@ -59,11 +60,11 @@ export function Header() {
 
       <div className="flex items-center gap-4">
         {/* Utility Buttons - Only show when signed in */}
-        {session && <UtilityButtons />}
+        {session && profileLoaded && <UtilityButtons />}
 
         {/* Profile/Region Section */}
         <div className="relative">
-          {session ? (
+          {session && profileLoaded ? (
             <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2"
@@ -84,10 +85,11 @@ export function Header() {
               <div className="flex items-center gap-2">
                 <div>
                   <div className="text-sm font-medium text-foreground text-ellipsis overflow-hidden whitespace-nowrap max-w-24">
-                    {session.user?.user_metadata?.name || session.user?.email?.split("@")[0]}
+                    {profile ? `${profile.first_name} ${profile.last_name}` : session.user?.user_metadata?.name || session.user?.email?.split("@")[0]}
                   </div>
                   <div className="text-xs text-muted text-ellipsis overflow-hidden whitespace-nowrap max-w-28">
                     {session.user?.email}
+
                   </div>
                 </div>
                 <ChevronDown
@@ -103,7 +105,7 @@ export function Header() {
             </button>
           )}
 
-          {showDropdown && session && (
+          {showDropdown && session && profileLoaded && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] rounded-md shadow-lg py-1 border border-border">
               <Link
                 href="/profile"
