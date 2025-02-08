@@ -6,10 +6,12 @@ import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { supabase } from '@/utils/supabase/client';
 import { Profile } from '@/types/supabase';
+import ProfileEditModal from "@/components/ProfileEditModal";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<any>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
@@ -78,7 +80,10 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors">
+          <button
+            onClick={() => setEditModalOpen(true)}
+            className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors"
+          >
             <Pencil className="w-4 h-4" />
             Edit
           </button>
@@ -89,7 +94,10 @@ export default function ProfilePage() {
       <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl mb-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-white">Personal Information</h3>
-          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors">
+          <button
+            onClick={() => setEditModalOpen(true)}
+            className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors"
+          >
             <Pencil className="w-4 h-4" />
             Edit
           </button>
@@ -123,7 +131,10 @@ export default function ProfilePage() {
       <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-white">Address</h3>
-          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors">
+          <button
+            onClick={() => setEditModalOpen(true)}
+            className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#242424] transition-colors"
+          >
             <Pencil className="w-4 h-4" />
             Edit
           </button>
@@ -144,6 +155,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </Card>
+
+      {/* Global Profile Edit Modal */}
+      <ProfileEditModal open={editModalOpen} onOpenChange={setEditModalOpen} />
     </div>
   );
 } 

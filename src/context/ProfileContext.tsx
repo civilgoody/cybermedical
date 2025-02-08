@@ -8,8 +8,14 @@ interface Profile {
   id: string;
   first_name?: string;
   last_name?: string;
+  phone?: string;
+  bio?: string;
+  country?: string;
+  city?: string;
+  post_code?: string;
   // If you later decide to use full_name, you can add it here as well.
 }
+
 
 // Define the context type.
 interface ProfileContextType {
