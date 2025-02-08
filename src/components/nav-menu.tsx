@@ -1,15 +1,27 @@
+"use client";
+
 import { Bell, Settings } from "lucide-react"
 import { RxDashboard } from "react-icons/rx";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function NavMenu() {
+  const pathname = usePathname();
+
   return (
     <nav className="flex items-center gap-6 bg-[#1A1A1A] rounded-full px-4 py-2">
-      <button className="bg-custom-gradient text-foreground px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+      <Link
+        href="/"
+        className={`flex items-center gap-2 text-sm px-4 py-3 rounded-lg transition-colors ${
+          pathname === "/"
+            ? "bg-custom-gradient text-foreground"
+            : "text-muted hover:text-foreground"
+        }`}
+      >
         <RxDashboard className="w-4 h-4" />
-        Dashboard
-      </button>
+        <span>Dashboard</span>
+      </Link>
       <button className="flex items-center gap-2 text-muted hover:text-foreground transition-colors">
-
         <Bell className="w-4 h-4" />
         <span className="text-sm">Alerts</span>
       </button>
