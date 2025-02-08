@@ -110,96 +110,134 @@ export default function ProfileEditModal({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="bg-[#141414] border border-[#1F1F1F] text-white max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-semibold text-white">Edit Profile</DialogTitle>
+          <DialogDescription className="text-[#666666]">
             Update your profile details. Changes will apply after saving.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 py-6">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-foreground">
+              <label className="block text-sm font-medium text-[#666666] mb-2">
                 First Name
               </label>
-              <Input {...register("first_name")} placeholder="First Name" />
+              <Input 
+                {...register("first_name")} 
+                placeholder="First Name" 
+                className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              />
               {errors.first_name && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-400 text-sm mt-1">
                   {errors.first_name.message}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground">
+              <label className="block text-sm font-medium text-[#666666] mb-2">
                 Last Name
               </label>
-              <Input {...register("last_name")} placeholder="Last Name" />
+              <Input 
+                {...register("last_name")} 
+                placeholder="Last Name" 
+                className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              />
               {errors.last_name && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-400 text-sm mt-1">
                   {errors.last_name.message}
                 </p>
               )}
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground">
+            <label className="block text-sm font-medium text-[#666666] mb-2">
               Phone
             </label>
-            <Input {...register("phone")} placeholder="Phone Number" />
+            <Input 
+              {...register("phone")} 
+              placeholder="Phone Number" 
+              className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+            />
             {errors.phone && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-400 text-sm mt-1">
                 {errors.phone.message}
               </p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground">
+            <label className="block text-sm font-medium text-[#666666] mb-2">
               Bio
             </label>
-            <Textarea {...register("bio")} placeholder="Your bio" />
+            <Textarea 
+              {...register("bio")} 
+              placeholder="Your bio" 
+              className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary min-h-[100px]"
+            />
             {errors.bio && (
-              <p className="text-red-500 text-sm">{errors.bio.message}</p>
+              <p className="text-red-400 text-sm mt-1">{errors.bio.message}</p>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-foreground">
+              <label className="block text-sm font-medium text-[#666666] mb-2">
                 Country
               </label>
-              <Input {...register("country")} placeholder="Country" />
+              <Input 
+                {...register("country")} 
+                placeholder="Country" 
+                className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              />
               {errors.country && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-400 text-sm mt-1">
                   {errors.country.message}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground">
+              <label className="block text-sm font-medium text-[#666666] mb-2">
                 City
               </label>
-              <Input {...register("city")} placeholder="City" />
+              <Input 
+                {...register("city")} 
+                placeholder="City" 
+                className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              />
               {errors.city && (
-                <p className="text-red-500 text-sm">{errors.city.message}</p>
+                <p className="text-red-400 text-sm mt-1">{errors.city.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground">
+              <label className="block text-sm font-medium text-[#666666] mb-2">
                 Post Code
               </label>
-              <Input {...register("post_code")} placeholder="Post Code" />
+              <Input 
+                {...register("post_code")} 
+                placeholder="Post Code" 
+                className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              />
               {errors.post_code && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-400 text-sm mt-1">
                   {errors.post_code.message}
                 </p>
               )}
             </div>
           </div>
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-end gap-3 pt-4">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button 
+                variant="outline" 
+                className="bg-transparent border-[#1F1F1F] text-white hover:bg-[#1A1A1A] hover:text-white"
+              >
+                Cancel
+              </Button>
             </DialogClose>
-            <Button type="submit">Save</Button>
+            <Button 
+              type="submit"
+              className="bg-primary hover:bg-primary/90 text-white"
+            >
+              Save Changes
+            </Button>
           </div>
         </form>
       </DialogContent>
