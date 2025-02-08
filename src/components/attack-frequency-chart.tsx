@@ -43,23 +43,29 @@ export default function AttackFrequencyChart() {
         return;
       }
 
-      // Process data into hourly buckets
-      const hourlyData = new Map<string, number>();
-      
+      // Use a Map keyed by a rounded timestamp (to the hour) to store the count and label.
+      const hourlyData = new Map<number, { label: string; count: number }>();
+
       attacks?.forEach(attack => {
         const date = new Date(attack.created_at);
-        const hourKey = date.toLocaleString('en-US', { 
+        // Round the timestamp to the start of the hour
+        const timestamp = Math.floor(date.getTime() / (60 * 60 * 1000)) * (60 * 60 * 1000);
+        // Format the label (you can adjust the options as needed).
+        const label = date.toLocaleString('en-US', { 
           month: 'short', 
           day: 'numeric', 
-          hour: 'numeric'
+          hour: 'numeric' 
         });
-        hourlyData.set(hourKey, (hourlyData.get(hourKey) || 0) + 1);
+        // Update the Map
+        const entry = hourlyData.get(timestamp) || { label, count: 0 };
+        entry.count++;
+        hourlyData.set(timestamp, entry);
       });
 
-      // Convert to array and sort by time
+      // Convert the map to an array, sort by timestamp, then map to the expected format
       const chartData = Array.from(hourlyData.entries())
-        .map(([hour, count]) => ({ hour, count }))
-        .sort((a, b) => new Date(a.hour).getTime() - new Date(b.hour).getTime());
+        .sort((a, b) => a[0] - b[0])
+        .map(([_, { label, count }]) => ({ hour: label, count }));
 
       setData(chartData);
     };
@@ -101,7 +107,6 @@ export default function AttackFrequencyChart() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <XAxis
-
                 dataKey="hour"
                 axisLine={false}
                 tickLine={false}

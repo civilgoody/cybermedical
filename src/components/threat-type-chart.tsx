@@ -43,10 +43,7 @@ export default function ThreatTypeChart() {
         .from('attack_reports')
         .select('type')
         .order('created_at', { ascending: false })
-        // For example, fetch up to 10k rows if needed
-        .range(0, 9999);
 
-      console.log("threats", threats);
       if (error) {
         console.error('Error fetching threat data:', error);
         return;
