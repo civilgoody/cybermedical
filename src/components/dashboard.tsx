@@ -11,8 +11,8 @@ export default function Dashboard() {
 
   if (!profileLoaded) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-white">
-        Saving your profile, please wait...
+      <div className="min-h-screen bg-black p-8">
+        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
       </div>
     );
   }
