@@ -13,7 +13,7 @@ type AttackData = {
 
 export default function AttackFrequencyChart() {
   const [data, setData] = useState<AttackData[]>([]);
-  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
+  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('30d');
 
   useEffect(() => {
     const fetchAttackData = async () => {

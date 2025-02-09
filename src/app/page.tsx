@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import Dashboard from "@/components/Dashboard";
-import Login from "@/components/Login";
+import Dashboard from "@/components/dashboard";
+import Login from "@/components/login";
+
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);

@@ -6,7 +6,7 @@ import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { supabase } from '@/utils/supabase/client';
 import { Profile } from '@/types/supabase';
-import ProfileEditModal from "@/components/ProfileEditModal";
+import ProfileEditModal from "@/components/profile-edit-modal";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);

@@ -23,7 +23,7 @@ const SEVERITY_COLORS = {
 
 export default function SeverityBreakdownChart() {
   const [data, setData] = useState<SeverityData[]>([])
-  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('24h')
+  const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('30d')
 
   useEffect(() => {
     const fetchSeverityData = async () => {
