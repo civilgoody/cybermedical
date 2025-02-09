@@ -41,7 +41,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const {
       data: { user },
     } = await supabase().auth.getUser();
-
+    console.log("user", user);
     if (user) {
       // Try to fetch an existing profile.
       const { data: existingProfile, error } = await supabase()
@@ -55,6 +55,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       if (existingProfile) {
+        console.log("existingProfile", existingProfile);
         // If a profile exists, save it.
         setProfile(existingProfile as Profile);
       } else {

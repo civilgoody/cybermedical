@@ -11,6 +11,7 @@ export default function InviteSection() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [totpCode, setTotpCode] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInvite = async () => {
     setMessage("");
@@ -25,6 +26,7 @@ export default function InviteSection() {
       return;
     }
 
+    setIsLoading(true);
     try {
       // List the user's MFA factors.
       const { data: mfaData, error: mfaError } = await supabase().auth.mfa.listFactors();
@@ -32,7 +34,6 @@ export default function InviteSection() {
         setMessage("Error retrieving MFA factors: " + mfaError.message);
         return;
       }
-
 
       const totpFactor = mfaData?.totp?.[0];
       if (!totpFactor) {
@@ -69,6 +70,8 @@ export default function InviteSection() {
       setTotpCode("");
     } catch (err: any) {
       setMessage("Error: " + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,20 +110,23 @@ export default function InviteSection() {
         </div>
         <Button 
           onClick={handleInvite}
-          className="w-full bg-primary hover:bg-primary/90"
+          disabled={isLoading}
+          className="w-full bg-primary hover:bg-primary/90 disabled:cursor-not-allowed"
         >
-          Send Invite
+          {isLoading ? "Sending Invite..." : "Send Invite"}
         </Button>
         {message && (
-          <p className={`p-3 rounded-lg ${
-            message.includes('Error') || message.includes('failed')
-              ? 'bg-red-950/50 text-red-400 border border-red-900'
-              : 'bg-green-950/50 text-green-400 border border-green-900'
-          }`}>
+          <p
+            className={`p-3 rounded-lg ${
+              message.includes("Error") || message.includes("failed")
+                ? "bg-red-950/50 text-red-400 border border-red-900"
+                : "bg-green-950/50 text-green-400 border border-green-900"
+            }`}
+          >
             {message}
           </p>
         )}
       </div>
     </Card>
   );
-} 
+}

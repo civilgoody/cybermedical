@@ -189,7 +189,12 @@ export default function MFASection() {
               placeholder="Enter TOTP code to disable MFA"
               className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
             />
-            <Button onClick={handleDisableMFA} disabled={loading} variant="destructive" className="whitespace-nowrap">
+            <Button
+              onClick={handleDisableMFA}
+              disabled={loading}
+              variant="destructive"
+              className="whitespace-nowrap hover:bg-red-600"
+            >
               Disable MFA
             </Button>
           </div>
