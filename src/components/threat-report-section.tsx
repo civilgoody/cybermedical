@@ -10,14 +10,12 @@ const refreshInterval = 60000;
 interface Report {
   created_at: string;
   severity: "low" | "medium" | "high" | "critical";
-
   type: ThreatType;
   description: string;
   analysis: string;
 }
 
 export function ThreatReportSection() {
-  // Add state for reports and loading
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,7 +40,6 @@ export function ThreatReportSection() {
     return () => clearInterval(interval);
   }, []);
 
-
   return (
     <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[820px]">
       <div className="flex items-center justify-between mb-6">
@@ -58,7 +55,10 @@ export function ThreatReportSection() {
             <div className="text-white">Loading...</div>
           ) : (
             reports.map((report, index) => (
-              <AttackReport key={index} {...report} />
+              <AttackReport 
+                key={index} 
+                {...report} 
+              />
             ))
           )}
         </div>
