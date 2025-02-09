@@ -141,6 +141,5 @@ This project is proprietary and confidential. Unauthorized copying or distributi
 
 ## Tasks
 1. Pagination
-2. Profile
-3. 2FA
-4. Filters
+2. Filters
+3. Read more
