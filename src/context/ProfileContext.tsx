@@ -56,8 +56,35 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (existingProfile) {
         console.log("existingProfile", existingProfile);
-        // If a profile exists, save it.
-        setProfile(existingProfile as Profile);
+        // Check if first_name or last_name is empty.
+        if (!existingProfile.first_name || !existingProfile.last_name) {
+          const metadata = user.user_metadata || {};
+          // Extract full name from metadata (Google returns full name or name).
+          const fullName = metadata.full_name || metadata.name || "";
+          // Split fullName into first and last name.
+          const nameParts = fullName.trim().split(" ");
+          console.log("nameParts", nameParts);
+          const firstName = nameParts.shift() || "";
+          const lastName = nameParts.join(" ");
+
+          // Update profile with first and last name.
+          const { error: updateError, data: updatedProfile } = await supabase()
+            .from("profiles")
+            .update({ first_name: firstName, last_name: lastName })
+            .eq("id", user.id)
+            .select("*")
+            .maybeSingle();
+
+          if (updateError) {
+            console.error("Error updating profile names:", updateError);
+            // Fall back to the existing profile.
+            setProfile(existingProfile as Profile);
+          } else {
+            setProfile(updatedProfile as Profile);
+          }
+        } else {
+          setProfile(existingProfile as Profile);
+        }
       } else {
         // If no profile exists, upsert one.
         const metadata = user.user_metadata || {};
