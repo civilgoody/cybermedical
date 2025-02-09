@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { inviteUser } from "@/utils/invite";
 import { supabase } from "@/utils/supabase/client";
+import { Card } from "@/components/ui/card";
 
 export default function InviteSection() {
   const [inviteEmail, setInviteEmail] = useState("");
@@ -72,28 +73,54 @@ export default function InviteSection() {
   };
 
   return (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-2">
-        Send Admin Invitation (Requires 2FA Verification)
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl mb-6">
+      <h2 className="text-xl font-semibold text-white mb-4">
+        Send Admin Invitation
       </h2>
-      <div className="flex flex-col gap-2">
-        <Input
-          type="email"
-          placeholder="Enter admin email"
-          value={inviteEmail}
-          onChange={(e) => setInviteEmail(e.target.value)}
-        />
-        <Input
-          type="text"
-          placeholder="Enter current TOTP code"
-          value={totpCode}
-          onChange={(e) => setTotpCode(e.target.value)}
-        />
-        <Button onClick={handleInvite}>Send Invite</Button>
+      <p className="text-[#666666] mb-4">
+        Invite new administrators to join your organization. 2FA verification required.
+      </p>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-[#666666] mb-2">
+            Admin Email
+          </label>
+          <Input
+            type="email"
+            placeholder="Enter admin email"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#666666] mb-2">
+            Your TOTP Code
+          </label>
+          <Input
+            type="text"
+            placeholder="Enter current TOTP code"
+            value={totpCode}
+            onChange={(e) => setTotpCode(e.target.value)}
+            className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+          />
+        </div>
+        <Button 
+          onClick={handleInvite}
+          className="w-full bg-primary hover:bg-primary/90"
+        >
+          Send Invite
+        </Button>
         {message && (
-          <p className="mt-2 font-mono bg-gray-800 p-2 rounded">{message}</p>
+          <p className={`p-3 rounded-lg ${
+            message.includes('Error') || message.includes('failed')
+              ? 'bg-red-950/50 text-red-400 border border-red-900'
+              : 'bg-green-950/50 text-green-400 border border-green-900'
+          }`}>
+            {message}
+          </p>
         )}
       </div>
-    </div>
+    </Card>
   );
 } 

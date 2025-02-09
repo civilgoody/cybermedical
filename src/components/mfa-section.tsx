@@ -5,6 +5,8 @@ import { supabase } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Copy, Check } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function MFASection() {
   const [loading, setLoading] = useState(false);
@@ -15,6 +17,14 @@ export default function MFASection() {
   const [verifyCode, setVerifyCode] = useState<string>(""); // For enabling MFA verification.
   const [disableCode, setDisableCode] = useState<string>(""); // For disabling MFA (re‑verification).
   const [mfaMessage, setMfaMessage] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+
+  // New: Copy the secret to the clipboard with visual feedback
+  const handleCopySecret = async () => {
+    await navigator.clipboard.writeText(secret);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Check MFA status on mount.
   useEffect(() => {
@@ -62,7 +72,6 @@ export default function MFASection() {
       setLoading(false);
       return;
     }
-
     const challengeId = challengeResponse.data.id;
     const verifyResponse = await supabase().auth.mfa.verify({
       factorId,
@@ -138,11 +147,10 @@ export default function MFASection() {
       setLoading(false);
       return;
     }
-        // Once verified, remove the MFA factor.
+    // Once verified, remove the MFA factor.
     const removeResponse = await supabase().auth.mfa.unenroll({ factorId: totpFactorId });
     if (removeResponse.error) {
       setMfaMessage(`Error disabling MFA: ${removeResponse.error.message}`);
-
       setLoading(false);
       return;
     }
@@ -153,20 +161,35 @@ export default function MFASection() {
   };
 
   return (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-2">Multi-Factor Authentication (MFA)</h2>
-      {loading && <p>Loading...</p>}
-      {mfaMessage && <p>{mfaMessage}</p>}
+    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl mb-6">
+      <h2 className="text-xl font-semibold text-white mb-4">Multi-Factor Authentication (MFA)</h2>
+      {loading && (
+        <div className="flex justify-center">
+          <div className="w-6 h-6 border-t-2 border-b-2 border-primary rounded-full animate-spin" />
+        </div>
+      )}
+      {mfaMessage && (
+        <p
+          className={`mb-4 p-3 rounded-lg ${
+            mfaMessage.includes("Error") || mfaMessage.includes("failed")
+              ? "bg-red-950/50 text-red-400 border border-red-900"
+              : "bg-green-950/50 text-green-400 border border-green-900"
+          }`}
+        >
+          {mfaMessage}
+        </p>
+      )}
       {mfaEnabled ? (
         <div>
-          <p>MFA is enabled on your account.</p>
-          <div className="flex items-center gap-2 mt-4">
+          <p className="text-[#666666] mb-4">MFA is currently enabled on your account.</p>
+          <div className="flex items-center gap-3">
             <Input
               value={disableCode}
               onChange={(e) => setDisableCode(e.target.value)}
               placeholder="Enter TOTP code to disable MFA"
+              className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
             />
-            <Button onClick={handleDisableMFA} disabled={loading}>
+            <Button onClick={handleDisableMFA} disabled={loading} variant="destructive" className="whitespace-nowrap">
               Disable MFA
             </Button>
           </div>
@@ -174,31 +197,64 @@ export default function MFASection() {
       ) : (
         <div>
           {!qrCode ? (
-            <Button onClick={handleEnableMFA} disabled={loading}>
-              Enable MFA (TOTP)
-            </Button>
+            <div>
+              <p className="text-[#666666] mb-4">
+                Enhance your account security by enabling Multi-Factor Authentication.
+              </p>
+              <Button onClick={handleEnableMFA} disabled={loading} className="bg-primary hover:bg-primary/90">
+                Enable MFA (TOTP)
+              </Button>
+            </div>
           ) : (
-            <Card className="p-4 my-4">
-              <p className="mb-2">Scan the QR code with your authenticator app:</p>
-              <img src={qrCode} alt="MFA QR Code" className="w-48 h-48 mb-4" />
-              <p className="mb-2">
+            <Card className="bg-[#1A1A1A] border-[#1F1F1F] p-6 rounded-lg">
+              <p className="text-white mb-4">Scan the QR code with your authenticator app:</p>
+              <div className="bg-white p-4 rounded-lg w-fit mb-6">
+                <img src={qrCode} alt="MFA QR Code" className="w-48 h-48" />
+              </div>
+              <p className="text-white mb-2">
                 If you're unable to scan the QR code, manually enter this secret:
               </p>
-              <p className="font-mono bg-gray-800 p-2 rounded">{secret}</p>
-              <div className="flex items-center gap-2 mt-4">
+              <div className="flex items-center gap-2 mb-6">
+                <code className="flex-1 font-mono bg-[#141414] p-3 rounded-lg text-primary">
+                  {secret}
+                </code>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="bg-[#141414] border-[#1F1F1F] hover:bg-[#1A1A1A] hover:text-primary"
+                        onClick={handleCopySecret}
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4 text-green-400" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{copied ? 'Copied!' : 'Copy secret'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex items-center gap-3">
                 <Input
                   value={verifyCode}
                   onChange={(e) => setVerifyCode(e.target.value)}
                   placeholder="Enter 6-digit code"
+                  className="bg-[#141414] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
                 />
-                <Button onClick={handleVerifyMFA} disabled={loading}>
-                  Verify and Enable MFA
+                <Button onClick={handleVerifyMFA} disabled={loading} className="bg-primary hover:bg-primary/90 whitespace-nowrap">
+                  Verify & Enable
                 </Button>
               </div>
             </Card>
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 } 

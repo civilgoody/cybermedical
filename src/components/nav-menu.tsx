@@ -18,14 +18,15 @@ export function NavMenu() {
             : "text-muted hover:text-foreground"
         }`}
       >
+
         <RxDashboard className="w-4 h-4" />
         <span>Dashboard</span>
       </Link>
-      <button className="flex items-center gap-2 text-muted hover:text-foreground transition-colors">
+      <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
         <Bell className="w-4 h-4" />
         <span className="text-sm">Alerts</span>
       </button>
-      <button className="flex items-center gap-2 text-muted hover:text-foreground transition-colors">
+      <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
           <path
             strokeLinecap="round"
@@ -38,12 +39,17 @@ export function NavMenu() {
       </button>
       <Link
         href="/settings"
-        className="flex items-center gap-2 text-muted hover:text-foreground transition-colors"
+        className={`flex items-center gap-2 text-sm px-4 py-3 rounded-lg transition-colors ${
+          pathname.startsWith("/settings")
+            ? "bg-custom-gradient text-foreground"
+            : "text-muted hover:text-foreground"
+
+
+        }`}
       >
         <Settings className="w-4 h-4" />
-        <span className="text-sm">Settings</span>
+        <span>Settings</span>
       </Link>
     </nav>
-
   );
 } 

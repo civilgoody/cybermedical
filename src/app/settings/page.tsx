@@ -25,11 +25,21 @@ export default function SettingsPage() {
     fetchSession();
   }, [router]);
 
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-black p-8">
+        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-black p-8 text-white">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      <MFASection />
-      <InviteSection />
+    <div className="min-h-screen bg-black p-8 px-32">
+      <h1 className="text-2xl font-bold text-white mb-8">Settings</h1>
+      <div className="max-w-3xl">
+        <MFASection />
+        <InviteSection />
+      </div>
     </div>
   );
 } 
