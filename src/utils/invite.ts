@@ -21,6 +21,5 @@ export async function inviteUser(email: string): Promise<void> {
     throw new Error(error || "Failed to invite user");
   }
   const data = await response.json();
-  console.log("Invitation sent:", data);
 } 
 

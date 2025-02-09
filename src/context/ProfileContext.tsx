@@ -41,7 +41,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const {
       data: { user },
     } = await supabase().auth.getUser();
-    console.log("user", user);
     if (user) {
       // Try to fetch an existing profile.
       const { data: existingProfile, error } = await supabase()
@@ -55,7 +54,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       if (existingProfile) {
-        console.log("existingProfile", existingProfile);
         // Check if first_name or last_name is empty.
         if (!existingProfile.first_name || !existingProfile.last_name) {
           const metadata = user.user_metadata || {};
@@ -63,7 +61,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const fullName = metadata.full_name || metadata.name || "";
           // Split fullName into first and last name.
           const nameParts = fullName.trim().split(" ");
-          console.log("nameParts", nameParts);
           const firstName = nameParts.shift() || "";
           const lastName = nameParts.join(" ");
 
@@ -92,7 +89,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const fullName = metadata.full_name || metadata.name || "";
         // Split fullName into first and last name.
         const nameParts = fullName.trim().split(" ");
-        console.log("nameParts", nameParts);
         const firstName = nameParts.shift() || "";
         const lastName = nameParts.join(" ");
 
