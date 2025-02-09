@@ -36,10 +36,14 @@ export function NavMenu() {
         </svg>
         <span className="text-sm">Reports</span>
       </button>
-      <button className="flex items-center gap-2 text-muted hover:text-foreground transition-colors">
+      <Link
+        href="/settings"
+        className="flex items-center gap-2 text-muted hover:text-foreground transition-colors"
+      >
         <Settings className="w-4 h-4" />
         <span className="text-sm">Settings</span>
-      </button>
+      </Link>
     </nav>
+
   );
 } 
