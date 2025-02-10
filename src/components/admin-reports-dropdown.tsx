@@ -23,9 +23,15 @@ export default function AdminReportsDropdown() {
     setLoading(true);
     const { data, error } = await supabase()
       .from("admin_reports")
-      .select("*")
+      .select(`
+        *,
+        profiles:admin (
+          first_name
+        )
+      `)
       .order("created_at", { ascending: false })
       .limit(10);
+    console.log(data);
     if (error) {
       console.error("Error fetching admin reports:", error.message);
     } else {
@@ -42,7 +48,8 @@ export default function AdminReportsDropdown() {
 
   const openReportDetail = (report: AdminReport) => {
     setSelectedReport(report);
-    setOpen(false);
+    // Don't close the dropdown when opening detail view
+    // setOpen(false);
   };
 
   return (
@@ -61,7 +68,7 @@ export default function AdminReportsDropdown() {
             <span className="text-sm font-medium">Reports</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80 p-4">
+        <DropdownMenuContent align="end" className="w-80 p-4 bg-background border shadow-lg backdrop-blur-lg">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Admin Reports</h3>
             <Button size="sm" onClick={() => { setShowModal(true); setOpen(false); }}>
@@ -83,13 +90,20 @@ export default function AdminReportsDropdown() {
                   <button
                     key={report.id}
                     onClick={() => openReportDetail(report)}
-                    className="w-full text-left p-3 rounded-md hover:bg-accent transition-colors"
+                    className="w-full text-left p-3 rounded-md hover:bg-accent/50 bg-muted/50 transition-colors"
                   >
-                    <div className="text-sm font-medium">
-                      {new Date(report.created_at).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                      {report.reports}
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">
+                          {new Date(report.created_at).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                          {report.reports}
+                        </div>
+                      </div>
+                      {selectedReport?.id === report.id && (
+                        <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-primary mt-1.5" />
+                      )}
                     </div>
                   </button>
                 ))}

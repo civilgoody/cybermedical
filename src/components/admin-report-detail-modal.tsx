@@ -9,6 +9,9 @@ export interface AdminReport {
   admin: string;
   reports: string;
   created_at: string;
+  profiles?: {
+    first_name: string;
+  } | null;
 }
 
 interface AdminReportDetailModalProps {
@@ -22,9 +25,14 @@ export default function AdminReportDetailModal({ report, onClose }: AdminReportD
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Report Details</DialogTitle>
-          <time className="text-sm text-muted-foreground">
-            {new Date(report.created_at).toLocaleString()}
-          </time>
+          <div className="flex flex-col gap-1 mt-1">
+            <div className="text-sm">
+              By: <span className="text-foreground">{report.profiles?.first_name || 'Unknown Admin'}</span>
+            </div>
+            <time className="text-sm text-muted-foreground">
+              {new Date(report.created_at).toLocaleString()}
+            </time>
+          </div>
         </DialogHeader>
         <ScrollArea className="mt-4 max-h-[60vh]">
           <div className="space-y-4">
