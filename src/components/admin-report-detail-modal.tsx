@@ -44,10 +44,14 @@ export default function AdminReportDetailModal({ report, onClose }: AdminReportD
           </div>
         </ScrollArea>
         <div className="mt-6 flex justify-end">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="unstyled" onClick={onClose} className="bg-transparent text-white hover:bg-[#1A1A1A]">
             Close
           </Button>
         </div>
+
+
+
+
       </DialogContent>
     </Dialog>
   );

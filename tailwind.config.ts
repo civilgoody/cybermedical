@@ -15,29 +15,57 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#FF29A8",
         border: "#1F1F1F",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        input: "#1F1F1F",
+        ring: "#FF29A8",
         background: "#141414",
-        foreground: "white",
-        cta: "linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%)",
+        foreground: "#FFFFFF",
+        
+        primary: {
+          DEFAULT: "#FF29A8",
+          foreground: "#FFFFFF",
+        },
+        secondary: {
+          DEFAULT: "#141414",
+          foreground: "#FFFFFF",
+        },
+        destructive: {
+          DEFAULT: "#FF3333",
+          foreground: "#FFFFFF",
+        },
         muted: {
           DEFAULT: "#666666",
-          foreground: "#888888"
+          foreground: "#888888",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#1F1F1F",
+          foreground: "#FFFFFF",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "#141414",
+          foreground: "#FFFFFF",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#1A1A1A",
+          foreground: "#FFFFFF",
         },
+        success: {
+          DEFAULT: "#6EE2AD",
+          foreground: "#141414",
+        },
+        warning: {
+          DEFAULT: "#FFB800",
+          foreground: "#141414",
+        },
+        info: {
+          DEFAULT: "#00FFFF",
+          foreground: "#141414",
+        },
+
+        // Gradients
+        cta: "linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%)",
+        
+        // Legacy color tokens (keeping for compatibility)
         FF29A8: "#FF29A8",
         "00FFFF": "#00FFFF",
         "6EE2AD": "#6EE2AD",
@@ -46,6 +74,20 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

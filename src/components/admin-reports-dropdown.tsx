@@ -11,6 +11,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AdminReportModal from "./admin-report-modal";
 import AdminReportDetailModal, { AdminReport } from "./admin-report-detail-modal";
+import { Edit, Plus, PlusSquare } from "lucide-react";
+import { FcPlus } from "react-icons/fc";
+import { RxPlus } from "react-icons/rx";
 
 export default function AdminReportsDropdown() {
   const [reports, setReports] = useState<AdminReport[]>([]);
@@ -56,23 +59,24 @@ export default function AdminReportsDropdown() {
     <div className="relative">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+          <Button variant="unstyled" size="sm" className="flex items-center gap-2 text-muted hover:text-foreground">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
+
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <span className="text-sm font-medium">Reports</span>
+            <span className="text-sm">Reports</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-80 p-4 bg-background border shadow-lg backdrop-blur-lg">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Admin Reports</h3>
             <Button size="sm" onClick={() => { setShowModal(true); setOpen(false); }}>
-              New Report
+              <RxPlus className="w-4 h-4" />
             </Button>
           </div>
           <ScrollArea className="h-[280px]">

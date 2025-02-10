@@ -1,10 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-:root {
-  --radius: 1.5rem;
-  /* --cta: linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%); */
+
+@layer base {
+  :root {
+    --radius: 1.5rem;
+    
+    /* Background gradients */
+    --gradient-cta: linear-gradient(161.36deg, #8845BE 19.26%, #B94AAB 46.7%, #881D7B 87.39%);
+    --gradient-primary: linear-gradient(to right, #FF29A8, #FF1493);
+    --gradient-secondary: linear-gradient(to right, #00FFFF, #6EE2AD);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }
+
+@layer utilities {
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .bg-gradient-cta {
+    background: var(--gradient-cta);
+  }
+}
+
+/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 2px;
 }
@@ -29,6 +60,48 @@
     scrollbar-width: thin;
     scrollbar-color: #FF29A8 transparent;
   }
+}
+
+/* Glass Effect */
+.glass {
+  @apply bg-background/80 backdrop-blur-lg border border-border/50;
+}
+
+/* Text Gradient */
+.text-gradient-primary {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FF29A8] to-[#FF1493];
+}
+
+.text-gradient-secondary {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00FFFF] to-[#6EE2AD];
+}
+
+/* Animation Utilities */
+.animate-fade {
+  animation: fade 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .bg-custom-gradient {

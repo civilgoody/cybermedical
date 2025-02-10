@@ -92,7 +92,7 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
           />
         </div>
         <DialogFooter className="mt-6">
-          <Button variant="secondary" onClick={onClose} disabled={loading}>
+          <Button variant="unstyled" onClick={onClose} disabled={loading} className="bg-transparent text-white hover:bg-[#1A1A1A]">
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
