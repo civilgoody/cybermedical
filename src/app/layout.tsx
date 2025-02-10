@@ -4,7 +4,7 @@ import "./globals.css"
 import type React from "react"
 import { Header } from "@/components/header"
 import { ProfileProvider } from "@/context/ProfileContext"
-
+import { Toaster } from "@/components/ui/toaster"
 export default function RootLayout({
   children,
 }: {
@@ -17,6 +17,7 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <Header />
             {children}
+            <Toaster />
           </div>
         </ProfileProvider>
       </body>

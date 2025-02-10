@@ -8,11 +8,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import AdminReportModal from "./admin-report-modal";
 import AdminReportDetailModal, { AdminReport } from "./admin-report-detail-modal";
-import { Edit, Plus, PlusSquare } from "lucide-react";
-import { FcPlus } from "react-icons/fc";
+import AdminReportItem from "./admin-report-item";
 import { RxPlus } from "react-icons/rx";
 
 export default function AdminReportsDropdown() {
@@ -34,7 +32,7 @@ export default function AdminReportsDropdown() {
       `)
       .order("created_at", { ascending: false })
       .limit(10);
-    console.log(data);
+
     if (error) {
       console.error("Error fetching admin reports:", error.message);
     } else {
@@ -49,10 +47,11 @@ export default function AdminReportsDropdown() {
     }
   }, [open]);
 
-  const openReportDetail = (report: AdminReport) => {
-    setSelectedReport(report);
-    // Don't close the dropdown when opening detail view
-    // setOpen(false);
+  const handleDelete = (id: string) => {
+    setReports(reports.filter(report => report.id !== id));
+    if (selectedReport?.id === id) {
+      setSelectedReport(null);
+    }
   };
 
   return (
@@ -63,7 +62,6 @@ export default function AdminReportsDropdown() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4">
               <path
                 strokeLinecap="round"
-
                 strokeLinejoin="round"
                 strokeWidth={2}
                 d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
@@ -79,7 +77,7 @@ export default function AdminReportsDropdown() {
               <RxPlus className="w-4 h-4" />
             </Button>
           </div>
-          <ScrollArea className="h-[280px]">
+          <div className="h-[280px] custom-scrollbar overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center h-20 text-muted-foreground">
                 Loading...
@@ -89,31 +87,19 @@ export default function AdminReportsDropdown() {
                 No reports found.
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 pr-2">
                 {reports.map((report) => (
-                  <button
+                  <AdminReportItem
                     key={report.id}
-                    onClick={() => openReportDetail(report)}
-                    className="w-full text-left p-3 rounded-md hover:bg-accent/50 bg-muted/50 transition-colors"
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">
-                          {new Date(report.created_at).toLocaleString()}
-                        </div>
-                        <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                          {report.reports}
-                        </div>
-                      </div>
-                      {selectedReport?.id === report.id && (
-                        <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-primary mt-1.5" />
-                      )}
-                    </div>
-                  </button>
+                    report={report}
+                    isSelected={selectedReport?.id === report.id}
+                    onSelect={setSelectedReport}
+                    onDelete={handleDelete}
+                  />
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
       {showModal && (
