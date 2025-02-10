@@ -139,7 +139,3 @@ For support:
 
 This project is proprietary and confidential. Unauthorized copying or distribution is prohibited.
 
-## Tasks
-1. Pagination
-2. Filters
-3. Read more
