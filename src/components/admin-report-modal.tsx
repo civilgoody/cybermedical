@@ -7,9 +7,13 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
+  DialogDescription,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface AdminReportModalProps {
   onClose: () => void;
@@ -19,22 +23,28 @@ interface AdminReportModalProps {
 export default function AdminReportModal({ onClose, onReportCreated }: AdminReportModalProps) {
   const [reportText, setReportText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleSubmit = async () => {
-    if (!reportText) {
-      setError("Please enter a report.");
+    if (!reportText.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a report.",
+        variant: "destructive",
+      });
       return;
     }
     setLoading(true);
-    setError(null);
 
-    // Get the current user to record who made the report.
     const {
       data: { user },
     } = await supabase().auth.getUser();
     if (!user) {
-      setError("User not found.");
+      toast({
+        title: "Error",
+        description: "User not found.",
+        variant: "destructive",
+      });
       setLoading(false);
       return;
     }
@@ -43,11 +53,20 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
       .from("admin_reports")
       .insert({
         admin: user.id,
-        reports: reportText,
+        reports: reportText.trim(),
       });
+
     if (insertError) {
-      setError(insertError.message);
+      toast({
+        title: "Error",
+        description: insertError.message,
+        variant: "destructive",
+      });
     } else {
+      toast({
+        title: "Success",
+        description: "Report submitted successfully.",
+      });
       setReportText("");
       onReportCreated();
       onClose();
@@ -57,31 +76,29 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="bg-[#141414] border-[#1F1F1F] p-6 rounded-lg">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-white">New Admin Report</DialogTitle>
-          <DialogDescription className="text-[#666666]">
-            Enter the details of the report.
+          <DialogTitle>New Admin Report</DialogTitle>
+          <DialogDescription>
+            Enter the details of your report below.
           </DialogDescription>
         </DialogHeader>
         <div className="mt-4">
-          <textarea
+          <Textarea
             value={reportText}
             onChange={(e) => setReportText(e.target.value)}
             placeholder="Enter report details..."
-            className="w-full p-2 bg-[#1A1A1A] text-white border border-[#1F1F1F] rounded"
-            rows={4}
+            className="min-h-[150px]"
           />
-          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
-        <div className="mt-4 flex justify-end gap-2">
+        <DialogFooter className="mt-6">
           <Button variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? "Submitting..." : "Submit Report"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
