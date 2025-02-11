@@ -19,7 +19,8 @@ const ReportSchema = z.object({
     "Man-in-the-Middle",
     "Zero-Day Exploit",
     "Insider Threat"
-  ])
+  ]),
+  mitigation: z.string()
 });
 
 export async function POST(request: Request) {
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
         description: report.description,
         analysis: report.analysis,
         type: report.type,
+        mitigation: report.mitigation,
         created_at: new Date().toISOString(), // Explicit timestamp
       })
       .select()

@@ -10,9 +10,10 @@ interface AttackReportProps {
   type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
   description: string
   analysis: string
+  mitigation?: string
 }
 
-export function AttackReport({ created_at, severity, type, description, analysis }: AttackReportProps) {
+export function AttackReport({ created_at, severity, type, description, analysis, mitigation }: AttackReportProps) {
   const [showDetail, setShowDetail] = useState(false);
 
   // Format the date
@@ -82,6 +83,7 @@ export function AttackReport({ created_at, severity, type, description, analysis
         type={type}
         description={description}
         analysis={analysis}
+        mitigation={mitigation}
       />
     </>
   )

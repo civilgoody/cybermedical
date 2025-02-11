@@ -11,6 +11,7 @@ interface AttackReportDetailProps {
   severity: "low" | "medium" | "high" | "critical"
   description: string
   analysis: string
+  mitigation?: string
   type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
 }
 
@@ -21,6 +22,7 @@ export function AttackReportDetail({
   severity,
   description,
   analysis,
+  mitigation,
   type
 }: AttackReportDetailProps) {
   // Format the date
@@ -78,6 +80,14 @@ export function AttackReportDetail({
             <div className="prose prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {analysis}
+              </ReactMarkdown>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-[#FF29A8] text-base mb-3">Mitigation</h4>
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {mitigation || 'No mitigation steps provided.'}
               </ReactMarkdown>
             </div>
           </div>
