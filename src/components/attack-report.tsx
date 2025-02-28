@@ -4,16 +4,31 @@ import { Badge } from "@/components/ui/badge"
 import { useState } from "react"
 import { AttackReportDetail } from "./attack-report-detail"
 
-interface AttackReportProps {
-  created_at: string
-  severity: "low" | "medium" | "high" | "critical"
-  type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
-  description: string
-  analysis: string
-  mitigation?: string
+interface TechnicalAnalysis {
+  technical_evaluation: string;
+  risk_assessment: string;
+  attack_chain: string;
+  iocs: string[];
 }
 
-export function AttackReport({ created_at, severity, type, description, analysis, mitigation }: AttackReportProps) {
+interface MitigationSteps {
+  immediate: string;
+  containment: string;
+  eradication: string;
+  recovery: string;
+  prevention: string;
+}
+
+interface AttackReportProps {
+  created_at: string;
+  severity: "low" | "medium" | "high" | "critical";
+  type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat";
+  description: string;
+  technical_analysis: TechnicalAnalysis;
+  mitigation_steps?: MitigationSteps;
+}
+
+export function AttackReport({ created_at, severity, type, description, technical_analysis, mitigation_steps }: AttackReportProps) {
   const [showDetail, setShowDetail] = useState(false);
 
   // Format the date
@@ -28,8 +43,13 @@ export function AttackReport({ created_at, severity, type, description, analysis
 
   // Capitalize severity for display
   const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1);
-  // Capitalize threat type for display
-  const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Unknown';
+  // Capitalize alert for display
+  const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : "Unknown";
+
+  // Create a short preview of the technical analysis
+  const previewTechnicalAnalysis =
+    technical_analysis.technical_evaluation?.substring(0, 100) +
+    (technical_analysis.technical_evaluation?.length > 100 ? "..." : "");
 
   return (
     <>
@@ -62,7 +82,7 @@ export function AttackReport({ created_at, severity, type, description, analysis
 
           <div>
             <h4 className="text-[#FF29A8] text-base mb-1">AI Analysis</h4>
-            <p className="text-white text-sm line-clamp-3">{analysis}</p>
+            <p className="text-white text-sm line-clamp-3">{previewTechnicalAnalysis}</p>
           </div>
 
           <button
@@ -82,8 +102,8 @@ export function AttackReport({ created_at, severity, type, description, analysis
         severity={severity}
         type={type}
         description={description}
-        analysis={analysis}
-        mitigation={mitigation}
+        technical_analysis={technical_analysis}
+        mitigation_steps={mitigation_steps}
       />
     </>
   )

@@ -5,6 +5,20 @@ import { MoreVertical } from "lucide-react"
 import { AttackReport } from "./attack-report"
 import { ThreatType } from '@/types/supabase';
 
+interface TechnicalAnalysis {
+  technical_evaluation: string;
+  risk_assessment: string;
+  attack_chain: string;
+  iocs: string[];
+}
+
+interface MitigationSteps {
+  immediate: string;
+  containment: string;
+  eradication: string;
+  recovery: string;
+  prevention: string;
+}
 const refreshInterval = 60000;
 
 interface Report {
@@ -12,7 +26,8 @@ interface Report {
   severity: "low" | "medium" | "high" | "critical";
   type: ThreatType;
   description: string;
-  analysis: string;
+  technical_analysis: TechnicalAnalysis;
+  mitigation_steps?: MitigationSteps;
 }
 
 export function ThreatReportSection() {

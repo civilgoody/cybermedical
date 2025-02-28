@@ -4,15 +4,65 @@ import { AlertTriangle, Clock } from "lucide-react"
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
+interface TechnicalAnalysis {
+  technical_evaluation: string;
+  risk_assessment: string;
+  attack_chain: string;
+  iocs: string[];
+}
+
+interface MitigationSteps {
+  immediate: string;
+  containment: string;
+  eradication: string;
+  recovery: string;
+  prevention: string;
+}
+
 interface AttackReportDetailProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   created_at: string
   severity: "low" | "medium" | "high" | "critical"
   description: string
-  analysis: string
-  mitigation?: string
+  technical_analysis: TechnicalAnalysis
+  mitigation_steps?: MitigationSteps
   type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
+}
+
+function formatTechnicalAnalysis(analysis: TechnicalAnalysis): string {
+  return `
+**Technical Evaluation:**
+${analysis.technical_evaluation}
+
+**Risk Assessment:**
+${analysis.risk_assessment}
+
+**Attack Chain:**
+${analysis.attack_chain}
+
+**Indicators of Compromise:**
+${analysis.iocs.join(", ")}
+  `;
+}
+
+function formatMitigationSteps(mitigation: MitigationSteps): string {
+  return `
+**Immediate Actions:**
+${mitigation.immediate}
+
+**Containment:**
+${mitigation.containment}
+
+**Eradication:**
+${mitigation.eradication}
+
+**Recovery:**
+${mitigation.recovery}
+
+**Prevention:**
+${mitigation.prevention}
+  `;
 }
 
 export function AttackReportDetail({
@@ -21,8 +71,8 @@ export function AttackReportDetail({
   created_at,
   severity,
   description,
-  analysis,
-  mitigation,
+  technical_analysis,
+  mitigation_steps,
   type
 }: AttackReportDetailProps) {
   // Format the date
@@ -39,6 +89,9 @@ export function AttackReportDetail({
   const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1)
   // Capitalize threat type for display
   const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Unknown'
+
+  const analysisMarkdown = formatTechnicalAnalysis(technical_analysis)
+  const mitigationMarkdown = mitigation_steps ? formatMitigationSteps(mitigation_steps) : 'No mitigation steps provided.'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,7 +132,7 @@ export function AttackReportDetail({
             <h4 className="text-[#FF29A8] text-base mb-3">AI Analysis</h4>
             <div className="prose prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {analysis}
+                {analysisMarkdown}
               </ReactMarkdown>
             </div>
           </div>
@@ -87,7 +140,7 @@ export function AttackReportDetail({
             <h4 className="text-[#FF29A8] text-base mb-3">Mitigation</h4>
             <div className="prose prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {mitigation || 'No mitigation steps provided.'}
+                {mitigationMarkdown}
               </ReactMarkdown>
             </div>
           </div>
