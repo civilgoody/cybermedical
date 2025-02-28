@@ -93,56 +93,78 @@ export function AttackReportDetail({
   const analysisMarkdown = formatTechnicalAnalysis(technical_analysis)
   const mitigationMarkdown = mitigation_steps ? formatMitigationSteps(mitigation_steps) : 'No mitigation steps provided.'
 
+  // Map severity to color
+  const severityColorMap = {
+    low: "bg-[#1A3A00] text-[#4CAF50] border-[#1A3A00]",
+    medium: "bg-[#453A00] text-[#FFD700] border-[#453A00]",
+    high: "bg-[#4A2500] text-[#FF9800] border-[#4A2500]",
+    critical: "bg-[#4A0000] text-[#FF5252] border-[#4A0000]"
+  }
+
+  const severityColor = severityColorMap[severity] || severityColorMap.medium
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#141414] border-[#1F1F1F] text-white max-w-2xl max-h-[85vh] overflow-hidden pt-10">
-        <DialogHeader>
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-2">
+      <DialogContent className="bg-[#141414] border-[#1F1F1F] text-white max-w-3xl max-h-[80vh] py-10 px-0 flex flex-col">
+        {/* Sticky header */}
+        <div className="sticky top-0 z-10 bg-[#141414] border-b border-[#1F1F1F] px-6 py-4 flex-shrink-0">
+          <DialogHeader className="mb-0">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-white" />
+                <DialogTitle className="text-white text-xl">Attack Report</DialogTitle>
+              </div>
+              <div className="flex gap-2">
+                <Badge variant="outline" className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5">
+                  {displayType}
+                </Badge>
+                <Badge variant="outline" className={`${severityColor} rounded-md px-3 py-0.5`}>
+                  {displaySeverity}
+                </Badge>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-[#666666] mt-2">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm">{formattedDate}</span>
+            </div>
+          </DialogHeader>
+        </div>
 
-              <AlertTriangle className="w-5 h-5 text-white" />
-              <DialogTitle className="text-white text-xl">Attack Report</DialogTitle>
-            </div>
-            <div className="flex gap-2">
-              <Badge variant="outline" className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5">
-                {displayType}
-              </Badge>
-              <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
-                {displaySeverity}
-              </Badge>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-[#666666] mb-6">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm">{formattedDate}</span>
-          </div>
-        </DialogHeader>
+        {/* Scrollable content */}
+        <div className="overflow-y-auto overflow-x-hidden custom-scrollbar px-6 mb-2 flex-grow">
+          <div className="space-y-8 pb-4">
+            <section className="bg-[#1A1A1A] rounded-lg p-5 border border-[#2A2A2A]">
+              <h4 className="text-[#FF29A8] text-base font-medium mb-3 flex items-center">
+                Description
+              </h4>
+              <div className="prose prose-invert max-w-none prose-p:text-[#E0E0E0] prose-headings:text-white">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {description}
+                </ReactMarkdown>
+              </div>
+            </section>
 
-        <div className="overflow-y-auto custom-scrollbar pr-4 space-y-6">
-          <div>
-            <h4 className="text-[#FF29A8] text-base mb-3">Description</h4>
-            <div className="prose prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {description}
-              </ReactMarkdown>
-            </div>
-          </div>
+            <section className="bg-[#1A1A1A] rounded-lg p-5 border border-[#2A2A2A]">
+              <h4 className="text-[#FF29A8] text-base font-medium mb-3 flex items-center">
+                AI Analysis
+              </h4>
+              <div className="prose prose-invert max-w-none prose-p:text-[#E0E0E0] prose-headings:text-white prose-strong:text-[#FF29A8]">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {analysisMarkdown}
+                </ReactMarkdown>
+              </div>
+            </section>
 
-          <div>
-            <h4 className="text-[#FF29A8] text-base mb-3">AI Analysis</h4>
-            <div className="prose prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {analysisMarkdown}
-              </ReactMarkdown>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-[#FF29A8] text-base mb-3">Mitigation</h4>
-            <div className="prose prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {mitigationMarkdown}
-              </ReactMarkdown>
-            </div>
+            <section className="bg-[#1A1A1A] rounded-lg p-5 border border-[#2A2A2A]">
+              <h4 className="text-[#FF29A8] text-base font-medium mb-3 flex items-center">
+                Mitigation
+              </h4>
+              <div className="prose prose-invert max-w-none prose-p:text-[#E0E0E0] prose-headings:text-white prose-strong:text-[#FF29A8]">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {mitigationMarkdown}
+                </ReactMarkdown>
+              </div>
+            </section>
           </div>
         </div>
       </DialogContent>
