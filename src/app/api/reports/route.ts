@@ -3,12 +3,9 @@ import { supabase, supabaseAdmin } from '@/utils/supabase/server';
 import { z } from 'zod';
 import type { Database } from '@/types/supabase';
 
-// Define a Zod schema for validating the report payload
+// Define a Zod schema for validating the new report payload
 const ReportSchema = z.object({
-  severity: z.enum(["low", "medium", "high", "critical"]),
-  description: z.string(),
-  analysis: z.string(),
-  type: z.enum([
+  alert_type: z.enum([
     "DDoS",
     "Phishing",
     "SQL Injection",
@@ -20,7 +17,23 @@ const ReportSchema = z.object({
     "Zero-Day Exploit",
     "Insider Threat"
   ]),
-  mitigation: z.string()
+  severity_level: z.enum(["low", "medium", "high", "critical"]),
+  description: z.string(),
+  technical_analysis: z.object({
+    technical_evaluation: z.string(),
+    risk_assessment: z.string(),
+    attack_chain: z.string(),
+    iocs: z.array(z.string())
+  }),
+  mitigation_steps: z.object({
+    immediate: z.string(),
+    containment: z.string(),
+    eradication: z.string(),
+    recovery: z.string(),
+    prevention: z.string()
+  }),
+  confidence_score: z.string(),
+  references: z.array(z.string())
 });
 
 export async function POST(request: Request) {
@@ -30,11 +43,10 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-
+  
   try {
-    // Parse the request body
+    // Parse and validate the request body with the new schema
     const body = await request.json();
-    // Validate using Zod; if it fails, return a 400 response with details
     const parseResult = ReportSchema.safeParse(body);
     if (!parseResult.success) {
       console.error("Validation error", parseResult.error);
@@ -44,16 +56,18 @@ export async function POST(request: Request) {
       );
     }
     const report = parseResult.data;
-
-    // Insert the validated data into your database. The created_at value is auto-generated.
+    
+    // Insert the validated data into the database.
     const { data, error } = await (await supabase()).from('attack_reports')
       .insert({
-        severity: report.severity,
+        alert_type: report.alert_type,
+        severity_level: report.severity_level,
         description: report.description,
-        analysis: report.analysis,
-        type: report.type,
-        mitigation: report.mitigation,
-        created_at: new Date().toISOString(), // Explicit timestamp
+        technical_analysis: report.technical_analysis,
+        mitigation_steps: report.mitigation_steps,
+        confidence_score: report.confidence_score,
+        references: report.references,
+        created_at: new Date().toISOString() // Explicit timestamp
       })
       .select()
       .single();
