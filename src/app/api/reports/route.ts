@@ -5,7 +5,7 @@ import type { Database } from '@/types/supabase';
 
 // Define a Zod schema for validating the new report payload
 const ReportSchema = z.object({
-  alert_type: z.enum([
+  alert: z.enum([
     "DDoS",
     "Phishing",
     "SQL Injection",
@@ -17,7 +17,7 @@ const ReportSchema = z.object({
     "Zero-Day Exploit",
     "Insider Threat"
   ]),
-  severity_level: z.enum(["low", "medium", "high", "critical"]),
+  severity: z.enum(["low", "medium", "high", "critical"]),
   description: z.string(),
   technical_analysis: z.object({
     technical_evaluation: z.string(),
@@ -60,8 +60,8 @@ export async function POST(request: Request) {
     // Insert the validated data into the database.
     const { data, error } = await (await supabase()).from('attack_reports')
       .insert({
-        alert_type: report.alert_type,
-        severity_level: report.severity_level,
+        alert: report.alert,
+        severity: report.severity,
         description: report.description,
         technical_analysis: report.technical_analysis,
         mitigation_steps: report.mitigation_steps,
