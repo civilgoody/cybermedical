@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseAdmin } from '@/utils/supabase/server';
 import { z } from 'zod';
-import type { Database } from '@/types/supabase';
 
 // Define a Zod schema for validating the new report payload
 const ReportSchema = z.object({
@@ -15,7 +14,8 @@ const ReportSchema = z.object({
     "Brute Force Attack",
     "Man-in-the-Middle",
     "Zero-Day Exploit",
-    "Insider Threat"
+    "Insider Threat",
+    "Network Scan"
   ]),
   severity: z.enum(["low", "medium", "high", "critical"]),
   description: z.string(),
