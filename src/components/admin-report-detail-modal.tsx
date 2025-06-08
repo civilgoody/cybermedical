@@ -48,10 +48,6 @@ export default function AdminReportDetailModal({ report, onClose }: AdminReportD
             Close
           </Button>
         </div>
-
-
-
-
       </DialogContent>
     </Dialog>
   );
