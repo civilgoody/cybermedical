@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { supabase } from '@/utils/supabase/client'
+import { queryKeys, queryConfigs } from '@/lib/query-client'
 
 // Define a type for the profile
 interface Profile {
@@ -23,12 +24,6 @@ interface User {
     [key: string]: any;
   };
 }
-
-// Query keys
-const profileQueryKeys = {
-  user: ['user'] as const,
-  profile: (userId: string) => ['profile', userId] as const,
-} as const
 
 // Fetch current user
 const fetchUser = async (): Promise<User | null> => {
@@ -75,14 +70,9 @@ const extractNamesFromMetadata = (user: User) => {
 // Main hook for user data
 export const useUser = () => {
   return useQuery({
-    queryKey: profileQueryKeys.user,
+    queryKey: queryKeys.user.current,
     queryFn: fetchUser,
-    staleTime: 15 * 60 * 1000, // 15 minutes - user data rarely changes
-    gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 1,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchInterval: false, // Disable automatic refetching
+    ...queryConfigs.stable,
   })
 }
 
@@ -100,23 +90,18 @@ export const useProfile = () => {
   }
 
   const profileQuery = useQuery({
-    queryKey: user ? profileQueryKeys.profile(user.id) : ['profile', 'no-user'],
-    queryFn: () => user ? fetchProfile(user.id) : null,
+    queryKey: user?.id ? queryKeys.user.profile(user.id) : queryKeys.user.profile('no-user'),
+    queryFn: () => user?.id ? fetchProfile(user.id) : null,
     enabled: !!user?.id,
-    staleTime: 15 * 60 * 1000, // 15 minutes - profile data doesn't change often
-    gcTime: 60 * 60 * 1000, // 1 hour
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchInterval: false, // Disable automatic refetching
-    retry: 1,
+    ...queryConfigs.stable,
   })
 
   // Separate mutation for initialization (internal)
   const initializationMutation = useMutation({
     mutationFn: upsertProfile,
     onSuccess: (data) => {
-      if (user) {
-        queryClient.setQueryData(profileQueryKeys.profile(user.id), data)
+      if (user?.id) {
+        queryClient.setQueryData(queryKeys.user.profile(user.id), data)
       }
     },
   })
@@ -125,8 +110,8 @@ export const useProfile = () => {
   const updateMutation = useMutation({
     mutationFn: upsertProfile,
     onSuccess: (data) => {
-      if (user) {
-        queryClient.setQueryData(profileQueryKeys.profile(user.id), data)
+      if (user?.id) {
+        queryClient.setQueryData(queryKeys.user.profile(user.id), data)
       }
     },
   })

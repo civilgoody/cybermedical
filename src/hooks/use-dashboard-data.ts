@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo } from 'react'
 import { supabase } from '@/utils/supabase/client'
-import { queryKeys } from '@/lib/query-client'
+import { queryKeys, queryConfigs } from '@/lib/query-client'
 import { ThreatType } from '@/types/supabase'
 
 // Types
@@ -163,10 +163,7 @@ export const useDashboardData = () => {
   const query = useQuery({
     queryKey: queryKeys.dashboard.all,
     queryFn: fetchDashboardData,
-    staleTime: 2 * 60 * 1000, // 2 minutes for dashboard data
-    refetchInterval: 2 * 60 * 1000, // Only poll every 2 minutes for dashboard
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true, // Do refetch on reconnect for dashboard
+    ...queryConfigs.dashboard, // Use dashboard config preset
   })
 
   // Set up real-time subscription once for all dashboard data
