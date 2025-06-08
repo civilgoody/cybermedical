@@ -1,59 +1,12 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card } from "@/components/ui/card"
 import { MoreVertical } from "lucide-react"
 import { AttackReport } from "./attack-report"
-import { ThreatType } from '@/types/supabase';
-
-interface TechnicalAnalysis {
-  technical_evaluation: string;
-  risk_assessment: string;
-  attack_chain: string;
-  iocs: string[];
-}
-
-interface MitigationSteps {
-  immediate: string;
-  containment: string;
-  eradication: string;
-  recovery: string;
-  prevention: string;
-}
-const refreshInterval = 60000;
-
-interface Report {
-  created_at: string;
-  severity: "low" | "medium" | "high" | "critical";
-  type: ThreatType;
-  description: string;
-  technical_analysis: TechnicalAnalysis;
-  mitigation_steps?: MitigationSteps;
-}
+import { useReports } from "@/hooks/use-dashboard-data"
 
 export function ThreatReportSection() {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch reports from the backend API
-  useEffect(() => {
-    async function fetchReports() {
-      try {
-        const res = await fetch('/api/reports');
-        if (res.ok) {
-          const data = await res.json();
-          setReports(data);
-        } else {
-          console.error('Failed to fetch reports');
-        }
-      } catch (error) {
-        console.error('Error fetching reports:', error);
-      }
-      setLoading(false);
-    }
-    fetchReports();
-    const interval = setInterval(fetchReports, refreshInterval);
-    return () => clearInterval(interval);
-  }, []);
+  const { data: reports = [], isLoading, error } = useReports()
 
   return (
     <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl flex flex-col h-[820px]">
@@ -66,12 +19,14 @@ export function ThreatReportSection() {
 
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
         <div className="space-y-4">
-          {loading ? (
+          {isLoading ? (
             <div className="text-white">Loading...</div>
+          ) : error ? (
+            <div className="text-red-400">Error loading reports</div>
           ) : (
             reports.map((report, index) => (
               <AttackReport 
-                key={index} 
+                key={report.id || index} 
                 {...report} 
               />
             ))

@@ -2,9 +2,13 @@
 
 import "./globals.css"
 import type React from "react"
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Header } from "@/components/header"
 import { ProfileProvider } from "@/context/ProfileContext"
 import { Toaster } from "@/components/ui/toaster"
+import { queryClient } from "@/lib/query-client"
+
 export default function RootLayout({
   children,
 }: {
@@ -13,13 +17,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-foreground">
-        <ProfileProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            {children}
-            <Toaster />
-          </div>
-        </ProfileProvider>
+        <QueryClientProvider client={queryClient}>
+          <ProfileProvider>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              {children}
+              <Toaster />
+            </div>
+          </ProfileProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
       </body>
     </html>
   )

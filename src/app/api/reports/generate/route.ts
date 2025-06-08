@@ -60,9 +60,6 @@ export async function POST(request: Request) {
         
         Make it sound like a real security incident that could happen today.`
     });
-    console.log(reportData);
-    
-    // Use admin client to insert into database
     
     const { data, error } = await (await supabase()).from('attack_reports')
       .insert({

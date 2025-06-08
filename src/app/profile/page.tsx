@@ -1,52 +1,17 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
-import { supabase } from '@/utils/supabase/client';
-import { Profile } from '@/types/supabase';
+import { useProfile } from '@/hooks/use-profile';
 import ProfileEditModal from "@/components/profile-edit-modal";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [session, setSession] = useState<any>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const { user, profile, isLoading } = useProfile();
 
-  // Wrap loadProfile in useCallback so it can be used as dependency.
-  const loadProfile = useCallback(async () => {
-    const { data: { session: currentSession } } = await supabase().auth.getSession();
-    if (!currentSession) return;
-    
-    setSession(currentSession);
-    
-    const { data, error } = await supabase()
-      .from('profiles')
-      .select('*')
-      .eq('id', currentSession.user.id)
-      .single();
-      
-    if (error) {
-      console.error('Error loading profile:', error);
-      return;
-    }
-    
-    setProfile(data);
-  }, []);
-
-  // Initial profile load.
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
-  // Reload profile each time the edit modal is closed.
-  useEffect(() => {
-    if (!editModalOpen) {
-      loadProfile();
-    }
-  }, [editModalOpen, loadProfile]);
-
-  if (!session || !profile) {
+  if (isLoading || !user || !profile) {
     return (
       <div className="min-h-screen bg-black p-8">
         <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
@@ -62,9 +27,9 @@ export default function ProfilePage() {
       <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            {session.user?.user_metadata?.avatar_url ? (
+            {user.user_metadata?.avatar_url ? (
               <Image
-                src={session.user.user_metadata.avatar_url}
+                src={user.user_metadata.avatar_url}
                 alt="Profile"
                 width={64}
                 height={64}
@@ -72,14 +37,14 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="w-16 h-16 rounded-full bg-primary text-foreground flex items-center justify-center text-xl">
-                {session.user?.email?.[0].toUpperCase()}
+                {user.email?.[0].toUpperCase()}
               </div>
             )}
             <div>
               <h2 className="text-xl font-semibold text-white">
                 {profile.first_name} {profile.last_name}
               </h2>
-              <p className="text-[#666666]">{profile.role === 'admin' ? 'Administrator' : 'User'}</p>
+              <p className="text-[#666666]">User</p>
               <p className="text-[#666666]">
                 {(profile.city || profile.country)
                   ? (profile.city && profile.country
@@ -123,7 +88,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <p className="text-[#666666] mb-2">Email Address</p>
-            <p className="text-white">{session.user.email}</p>
+            <p className="text-white">{user.email}</p>
           </div>
           <div>
             <p className="text-[#666666] mb-2">Phone</p>

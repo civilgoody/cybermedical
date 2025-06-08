@@ -48,7 +48,7 @@ export default function ProfileEditModal({
   open: openProp,
   onOpenChange: onOpenChangeProp,
 }: ProfileEditModalProps) {
-  const { profile, reloadProfile } = useProfile();
+  const { profile } = useProfile();
 
   const {
     register,
@@ -96,7 +96,6 @@ export default function ProfileEditModal({
     } else {
       // Update the form with the newly returned data and refresh the global profile.
       reset(updatedProfile);
-      await reloadProfile();
       setDialogOpen(false);
     }
   };
