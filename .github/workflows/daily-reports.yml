@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Generate and Submit Report
         run: |
-          curl -X POST "${{ secrets.API_ENDPOINT }}" \
+          curl -f -X POST "${{ secrets.API_ENDPOINT }}" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.API_KEY }}" \
             -d '{}'
