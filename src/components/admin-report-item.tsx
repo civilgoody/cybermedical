@@ -46,11 +46,11 @@ export default function AdminReportItem({ report, isSelected, onSelect, onDelete
   };
 
   return (
-    <button
+    <div
       onClick={() => onSelect(report)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group w-full text-left p-3 rounded-md hover:bg-accent/50 bg-muted/50 transition-colors relative"
+      className="group w-full cursor-pointer text-left p-3 rounded-md hover:bg-accent/50 bg-muted/50 transition-colors relative"
     >
       <div className="flex justify-between items-start gap-2">
         <div className="flex-1">
@@ -79,6 +79,6 @@ export default function AdminReportItem({ report, isSelected, onSelect, onDelete
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 } 

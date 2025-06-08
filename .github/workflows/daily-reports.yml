@@ -1,0 +1,22 @@
+name: Generate Daily Security Reports
+
+on:
+  schedule:
+    # Runs daily at 9 AM UTC (adjust as needed)
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate and Submit Report
+        run: |
+          curl -X POST "${{ secrets.API_ENDPOINT }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.API_KEY }}" \
+            -d '{}'
+        env:
+          # Add any environment variables your API needs
+          NODE_ENV: production
