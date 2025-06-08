@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabase/client";
-import MFASection from "@/components/mfa-section";
-import InviteSection from "@/components/invite-section";
+import MFASection from "@/components/auth/mfa-section";
+import InviteSection from "@/components/auth/invite-section";
 
 export default function SettingsPage() {
   const router = useRouter();

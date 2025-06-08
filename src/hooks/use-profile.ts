@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useRef } from 'react'
-import { supabase } from '@/utils/supabase/client'
-import { queryKeys, queryConfigs } from '@/lib/query-client'
+import { queryConfigs, queryKeys } from '@/lib/query-client';
+import { supabase } from '@/utils/supabase/client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 
 // Define a type for the profile
 interface Profile {

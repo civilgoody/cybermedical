@@ -4,7 +4,7 @@ import { Bell, Settings } from "lucide-react"
 import { RxDashboard } from "react-icons/rx";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import AdminReportsDropdown from "@/components/admin-reports-dropdown";
+import AdminReportsDropdown from "@/components/admin/admin-reports-dropdown";
 
 export function NavMenu() {
   const pathname = usePathname();

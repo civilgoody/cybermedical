@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import Dashboard from "../components/dashboard";
-import Login from "../components/login";
+import Dashboard from "@/components/dashboard/dashboard";
+import Login from "@/components/auth/login";
 
 
 export default function Home() {

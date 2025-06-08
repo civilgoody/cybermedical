@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { useProfile } from '@/hooks/use-profile';
-import ProfileEditModal from "@/components/profile-edit-modal";
+import ProfileEditModal from "@/components/auth/profile-edit-modal";
 
 export default function ProfilePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);

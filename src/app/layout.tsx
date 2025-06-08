@@ -1,13 +1,13 @@
 'use client';
 
-import "./globals.css"
-import type React from "react"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Header } from "@/components/header"
-import { ProfileProvider } from "@/context/ProfileContext"
-import { Toaster } from "@/components/ui/toaster"
-import { queryClient } from "@/lib/query-client"
+import { Header } from "@/components/layout/header";
+import { Toaster } from "@/components/ui/toaster";
+import { ProfileProvider } from "@/context/ProfileContext";
+import { queryClient } from "@/lib/query-client";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import type React from "react";
+import "./globals.css";
 
 export default function RootLayout({
   children,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useProfile } from "@/context/ProfileContext";
-import { ThreatReportSection } from "./threat-report-section";
+import { ThreatReportSection } from "../reports/threat-report-section";
 import AttackFrequencyChart from "./attack-frequency-chart";
 import SeverityBreakdownChart from "./severity-breakdown-chart";
 import ThreatTypeChart from "./threat-type-chart";
