@@ -6,6 +6,7 @@ import { MoreVertical } from "lucide-react"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, type ChartData } from "chart.js"
 import { useThreatTypes } from "@/hooks/use-dashboard-data"
+import { SkeletonChart } from "@/components/ui/skeleton"
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -74,9 +75,7 @@ export default function ThreatTypeChart() {
         {/* Chart Container */}
         <div className="relative h-[220px]">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-[#666666]">
-              Loading...
-            </div>
+            <SkeletonChart />
           ) : error ? (
             <div className="flex items-center justify-center h-full text-red-400">
               Error loading data

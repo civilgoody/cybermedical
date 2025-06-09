@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import { LoadingScreen } from '@/components/ui/loading-spinner';
 
 export default function SetPasswordPage() {
   const [password, setPassword] = useState('');
@@ -18,13 +19,16 @@ export default function SetPasswordPage() {
   const [validToken, setValidToken] = useState<boolean | null>(null);
   
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   // Check if we have valid tokens from the invite link
   useEffect(() => {
     const checkTokens = async () => {
-      const accessToken = searchParams.get('access_token');
-      const refreshToken = searchParams.get('refresh_token');
+      // Supabase auth tokens come in the URL fragment (#), not query parameters (?)
+      const hash = window.location.hash.substring(1); // Remove the # 
+      const params = new URLSearchParams(hash);
+      
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
       
       if (!accessToken || !refreshToken) {
         setValidToken(false);
@@ -48,6 +52,8 @@ export default function SetPasswordPage() {
           });
         } else {
           setValidToken(true);
+          // Clear the URL fragment for security
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (error) {
         setValidToken(false);
@@ -58,7 +64,7 @@ export default function SetPasswordPage() {
     };
 
     checkTokens();
-  }, [searchParams]);
+  }, []); // Remove searchParams dependency since we're reading from fragment
 
   const handleSetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,11 +108,7 @@ export default function SetPasswordPage() {
   };
 
   if (validToken === null) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-primary rounded-full animate-spin" />
-      </div>
-    );
+    return <LoadingScreen message="Validating invitation..." />;
   }
 
   if (validToken === false) {

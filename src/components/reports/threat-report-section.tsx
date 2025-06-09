@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { MoreVertical } from "lucide-react"
 import { AttackReport } from "./attack-report"
 import { useReports } from "@/hooks/use-dashboard-data"
+import { SkeletonCard } from "@/components/ui/skeleton"
 
 export function ThreatReportSection() {
   const { data: reports = [], isLoading, error } = useReports()
@@ -20,7 +21,11 @@ export function ThreatReportSection() {
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
         <div className="space-y-4">
           {isLoading ? (
-            <div className="text-white">Loading...</div>
+            <>
+              {[...Array(3)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </>
           ) : error ? (
             <div className="text-red-400">Error loading reports</div>
           ) : (

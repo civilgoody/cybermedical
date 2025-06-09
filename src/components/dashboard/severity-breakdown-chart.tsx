@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
 import { useSeverityBreakdown } from "@/hooks/use-dashboard-data"
+import { SkeletonChart } from "@/components/ui/skeleton"
 
 const SEVERITY_COLORS = {
   low: "#4CAF50",     // Green
@@ -43,9 +44,7 @@ export default function SeverityBreakdownChart() {
         </div>
         <div className="h-[300px]">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-[#666666]">
-              Loading...
-            </div>
+            <SkeletonChart />
           ) : error ? (
             <div className="flex items-center justify-center h-full text-red-400">
               Error loading data

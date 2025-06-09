@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
 import { useAttackFrequency } from "@/hooks/use-dashboard-data"
+import { SkeletonChart } from "@/components/ui/skeleton"
 
 export default function AttackFrequencyChart() {
   const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('30d');
@@ -38,9 +39,7 @@ export default function AttackFrequencyChart() {
 
         <div className="h-[250px] w-full">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-[#666666]">
-              Loading...
-            </div>
+            <SkeletonChart />
           ) : error ? (
             <div className="flex items-center justify-center h-full text-red-400">
               Error loading data

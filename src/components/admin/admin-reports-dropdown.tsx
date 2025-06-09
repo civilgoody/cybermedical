@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import AdminReportModal from "./admin-report-modal";
 import AdminReportDetailModal, { AdminReport } from "./admin-report-detail-modal";
 import AdminReportItem from "./admin-report-item";
@@ -79,8 +80,8 @@ export default function AdminReportsDropdown() {
           </div>
           <div className="h-[280px] custom-scrollbar overflow-y-auto">
             {loading ? (
-              <div className="flex items-center justify-center h-20 text-muted-foreground">
-                Loading...
+              <div className="flex items-center justify-center h-20">
+                <LoadingSpinner size="sm" />
               </div>
             ) : reports.length === 0 ? (
               <div className="flex items-center justify-center h-20 text-muted-foreground">
