@@ -69,6 +69,25 @@ const extractNamesFromMetadata = (user: User) => {
 
 // Main hook for user data
 export const useUser = () => {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    // Listen for auth state changes and refetch user data
+    const { data: authListener } = supabase().auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN') {
+          // Refetch user data when signed in
+          queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
+        } else if (event === 'SIGNED_OUT') {
+          // Clear user data when signed out
+          queryClient.setQueryData(queryKeys.user.current, null)
+        }
+      }
+    )
+
+    return () => authListener.subscription.unsubscribe()
+  }, [queryClient])
+
   return useQuery({
     queryKey: queryKeys.user.current,
     queryFn: fetchUser,
@@ -185,3 +204,4 @@ export const useProfile = () => {
     isUpdating: updateMutation.isPending, // Only show updating state for user actions
   }
 } 
+ 

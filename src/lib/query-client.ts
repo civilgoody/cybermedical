@@ -62,4 +62,9 @@ export const queryKeys = {
     current: ['user'] as const,
     profile: (userId: string) => ['profile', userId] as const,
   },
+  mfa: {
+    all: ['mfa'] as const,
+    factors: () => [...queryKeys.mfa.all, 'factors'] as const,
+  },
 } as const 
+ 

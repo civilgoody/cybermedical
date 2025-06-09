@@ -244,3 +244,4 @@ export const useThreatTypes = () => {
   
   return { data: processedData, isLoading, error }
 } 
+ 
