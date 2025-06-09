@@ -1,20 +1,23 @@
 "use client";
 
-import { useProfile } from "@/context/ProfileContext";
+import { useProfile } from "@/hooks/use-profile";
+import { LoadingScreen } from "@/components/ui/loading-spinner";
 import { ThreatReportSection } from "../reports/threat-report-section";
 import AttackFrequencyChart from "./attack-frequency-chart";
 import SeverityBreakdownChart from "./severity-breakdown-chart";
 import ThreatTypeChart from "./threat-type-chart";
 
 export default function Dashboard() {
-  const { profileLoaded } = useProfile();
+  const { user, profile, isLoading, error } = useProfile();
 
-  if (!profileLoaded) {
-    return (
-      <div className="min-h-screen bg-black p-8">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
-      </div>
-    );
+  // Show loading if still checking auth or profile
+  if (isLoading || !user) {
+    return <LoadingScreen message="Loading dashboard..." />;
+  }
+
+  // Show error if there's an error
+  if (error) {
+    return <LoadingScreen message="Authentication error..." />;
   }
 
   return (

@@ -5,18 +5,20 @@ import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { useProfile } from '@/hooks/use-profile';
+import { SkeletonProfile } from "@/components/ui/skeleton";
 import ProfileEditModal from "@/components/auth/profile-edit-modal";
 
 export default function ProfilePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const { user, profile, isLoading } = useProfile();
 
-  if (isLoading || !user || !profile) {
-    return (
-      <div className="min-h-screen bg-black p-8">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
-      </div>
-    );
+  if (isLoading || !user) {
+    return <SkeletonProfile />;
+  }
+
+  // If profile hasn't loaded yet, show skeleton
+  if (!profile) {
+    return <SkeletonProfile />;
   }
 
   return (

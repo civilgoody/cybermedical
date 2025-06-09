@@ -34,7 +34,6 @@ const fetchUser = async (): Promise<User | null> => {
 
 // Fetch user profile
 const fetchProfile = async (userId: string): Promise<Profile | null> => {
-  console.log('Fetching profile for user:', userId) // Debug log
   const { data, error } = await supabase()
     .from('profiles')
     .select('*')
@@ -92,6 +91,8 @@ export const useUser = () => {
     queryKey: queryKeys.user.current,
     queryFn: fetchUser,
     ...queryConfigs.stable,
+    retry: 3, // Override the stable config retry
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   })
 }
 
@@ -113,6 +114,8 @@ export const useProfile = () => {
     queryFn: () => user?.id ? fetchProfile(user.id) : null,
     enabled: !!user?.id,
     ...queryConfigs.stable,
+    retry: 2, // Retry profile fetching
+    retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 5000),
   })
 
   // Separate mutation for initialization (internal)
@@ -197,11 +200,11 @@ export const useProfile = () => {
   return {
     user,
     profile: profileQuery.data,
-    isLoading: userLoading || profileQuery.isLoading || initializationMutation.isPending,
+    isLoading: userLoading || profileQuery.isLoading,
     error: profileQuery.error,
-    isReady: !userLoading && !profileQuery.isLoading && !!profileQuery.data,
-    updateProfile: updateMutation.mutateAsync, // Only expose the user update mutation
-    isUpdating: updateMutation.isPending, // Only show updating state for user actions
+    isReady: !userLoading && !profileQuery.isLoading && !!user,
+    updateProfile: updateMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
   }
 } 
  

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/hooks/use-profile";
+import { LoadingScreen } from "@/components/ui/loading-spinner";
 import MFASection from "@/components/auth/mfa-section";
 import InviteSection from "@/components/auth/invite-section";
 
@@ -19,11 +20,7 @@ export default function SettingsPage() {
 
   // Show loading while checking auth or redirecting
   if (isLoading || (!isLoading && !user)) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
-      </div>
-    );
+    return <LoadingScreen message="Loading settings..." />;
   }
 
   return (
