@@ -46,7 +46,7 @@ export default function ProfilePage() {
               <h2 className="text-xl font-semibold text-white">
                 {profile.first_name} {profile.last_name}
               </h2>
-              <p className="text-[#666666]">User</p>
+              <p className="text-[#666666]">Admin</p>
               <p className="text-[#666666]">
                 {(profile.city || profile.country)
                   ? (profile.city && profile.country
