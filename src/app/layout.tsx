@@ -5,7 +5,7 @@ import type React from "react"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Header } from "@/components/layout/header"
-import { ProfileProvider } from "@/context/ProfileContext"
+import { Footer } from "@/components/layout/footer"
 import { Toaster } from "@/components/ui/sonner"
 import { queryClient } from "@/lib/query-client"
 import { useProfile } from "@/hooks/use-profile"
@@ -18,7 +18,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     <>
       <div className="min-h-screen flex flex-col">
         <Header />
-        {children}
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
         <Toaster />
       </div>
       <DemoIndicator userEmail={user?.email} />
@@ -35,11 +38,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-black text-foreground">
         <QueryClientProvider client={queryClient}>
-          <ProfileProvider>
-            <LayoutContent>
-              {children}
-            </LayoutContent>
-          </ProfileProvider>
+          <LayoutContent>
+            {children}
+          </LayoutContent>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>
