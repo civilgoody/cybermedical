@@ -1,89 +1,251 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { FcGoogle } from "react-icons/fc";
-import { supabase } from "@/utils/supabase/client";
-import Image from "next/image";
-import { X } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Eye, EyeOff, Play, User } from 'lucide-react';
+import { FaGoogle } from 'react-icons/fa';
+import { toast } from 'sonner';
+import { DEMO_USER_EMAIL, DEMO_USER_PASSWORD } from '@/lib/constants';
 
 export default function Login() {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
+  // Handle URL error parameters on mount
   useEffect(() => {
-    // Check for error parameters in the URL on mount
     const searchParams = new URLSearchParams(window.location.search);
-    const error = searchParams.get("error");
-    const errorCode = searchParams.get("error_code");
+    const error = searchParams.get('error');
+    const errorCode = searchParams.get('error_code');
 
     if (error && errorCode) {
       // Map error codes to user-friendly messages
       const errorMessages: { [key: string]: string } = {
-        signup_disabled: "This is a private application. Please contact an administrator for access.",
-        access_denied: "Access denied. Please try again or contact support if the issue persists.",
+        signup_disabled: "This is a private admin application. Please use the demo account or contact an administrator for access.",
+        access_denied: "Access denied. Please use the demo account or contact support if the issue persists.",
       };
 
-      setErrorMessage(errorMessages[errorCode] || "An error occurred during sign in. Please try again.");
+      const message = errorMessages[errorCode] || "An error occurred during sign in. Please try again.";
+      
+      toast.error("Sign Up Not Allowed", {
+        description: message,
+        duration: 8000, // Longer duration for important messages
+      });
+      
+      // Clean up URL without causing page reload
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setErrorMessage(""); // Clear any existing errors
-      const { error } = await supabase().auth.signInWithOAuth({
-        provider: "google"
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase().auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      toast.error("Login Failed", {
+        description: error.message,
       });
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      console.error("Error signing in with Google:", error);
-      setErrorMessage("Unable to connect to Google. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+      const { error } = await supabase().auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+
+    if (error) {
+      toast.error("Google Login Failed", {
+        description: error.message,
+      });
+      setLoading(false);
     }
   };
 
-  // Clear error message and remove error query parameters from URL
-  const clearError = () => {
-    setErrorMessage("");
-    window.history.replaceState({}, document.title, window.location.pathname);
+  const handleDemoLogin = async () => {
+    setDemoLoading(true);
+
+    const { error } = await supabase().auth.signInWithPassword({
+      email: DEMO_USER_EMAIL,
+      password: DEMO_USER_PASSWORD,
+    });
+
+    if (error) {
+      toast.error("Demo Login Failed", {
+        description: "Please try again or contact support.",
+      });
+    }
+    setDemoLoading(false);
+  };
+
+  const fillDemoCredentials = () => {
+    setEmail(DEMO_USER_EMAIL);
+    setPassword(DEMO_USER_PASSWORD);
+    toast.success("Demo credentials filled in");
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {errorMessage && (
-          <div className="mb-6 bg-red-950/50 border border-red-900 rounded-lg p-4">
-            <div className="flex justify-between items-center text-red-400">
-              <span>{errorMessage}</span>
-              <button
-                onClick={clearError}
-                className="p-1 hover:text-red-300 transition-colors rounded-lg hover:bg-red-900/50"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )}
+    <div className="min-h-screen bg-black flex items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-white">Cyber Security Dashboard</h1>
+          <p className="text-[#999999] text-lg">Real-time attack monitoring and AI analysis</p>
+        </div>
 
-        <div className="mb-8 flex justify-center">
-          <div className="p-3 rounded-full border border-purple-500/20">
-            <Image src="/cyber-logo.png" alt="Cyber Logo" width={64} height={64} />
+        {/* Demo Button - Most Prominent */}
+        <Card className="bg-gradient-to-r from-primary/20 to-purple-600/20 border-primary/30 p-8">
+          <div className="text-center space-y-6">
+            <div className="flex items-center justify-center gap-2">
+              <Badge className="bg-primary/20 text-primary border-primary/30 text-sm px-3 py-1">
+                Portfolio Demo
+              </Badge>
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-xl font-semibold text-white">Try the Live Demo</h3>
+              <p className="text-[#cccccc] leading-relaxed">
+                Experience the full dashboard with real-time attack data, AI analysis, and admin features
+              </p>
+            </div>
+            <Button 
+              onClick={handleDemoLogin}
+              disabled={demoLoading || loading}
+              size="lg"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-12"
+            >
+              {demoLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
+                  Loading Demo...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Play className="w-5 h-5" />
+                  Try Demo Now
+                </div>
+              )}
+            </Button>
+          </div>
+        </Card>
+
+        {/* Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-[#333333]" />
+          </div>
+          <div className="relative flex justify-center text-sm uppercase">
+            <span className="bg-black px-4 text-[#666666] font-medium">Or sign in</span>
           </div>
         </div>
         
-        <Card className="bg-[#141414] border-[#1F1F1F] p-8 rounded-xl">
-          <h1 className="text-2xl font-bold text-white mb-2 text-center">Welcome Back</h1>
-          <p className="text-[#666666] text-center mb-8">Sign in to continue to Cyber AI</p>
+        {/* Email/Password Login */}
+        <Card className="bg-[#141414] border-[#1F1F1F] p-8">
+          <div className="mb-4 flex justify-between items-center">
+            <h3 className="text-lg font-medium text-white">Admin Login</h3>
+            <Button
+              onClick={fillDemoCredentials}
+              variant="ghost"
+              size="sm"
+              className="text-primary hover:text-primary/80 hover:bg-primary/10 text-xs"
+            >
+              <User className="w-3 h-3 mr-1" />
+              Use Demo Credentials
+            </Button>
+          </div>
           
+          <form onSubmit={handleEmailLogin} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#cccccc]">
+                Email Address
+              </label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="bg-[#1A1A1A] border-[#333333] text-white placeholder:text-[#666666] focus-visible:ring-primary h-12"
+                disabled={loading || demoLoading}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#cccccc]">
+                Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="bg-[#1A1A1A] border-[#333333] text-white placeholder:text-[#666666] focus-visible:ring-primary pr-12 h-12"
+                  disabled={loading || demoLoading}
+                  required
+                />
           <button
-            onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 bg-[#1A1A1A] text-white py-4 rounded-lg hover:bg-[#242424] transition-colors border border-[#1F1F1F]"
-          >
-            <FcGoogle className="w-5 h-5" />
-            <span>Continue with Google</span>
-          </button>
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#666666] hover:text-primary transition-colors"
+                  disabled={loading || demoLoading}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+            <Button 
+              type="submit" 
+              disabled={loading || demoLoading}
+              className="w-full bg-[#1A1A1A] hover:bg-[#242424] text-white border border-[#333333] h-12"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
+                  Signing in...
+                </div>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </form>
         </Card>
+
+        {/* Google OAuth */}
+        <Card className="bg-[#141414] border-[#1F1F1F] p-8">
+          <Button
+            onClick={handleGoogleLogin}
+            disabled={loading || demoLoading}
+            variant="outline"
+            className="w-full bg-white hover:text-primary text-black border-gray-300 h-12 font-medium"
+          >
+            <FaGoogle className="w-5 h-5 mr-3" />
+            Continue with Google
+          </Button>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center pt-4">
+          <p className="text-sm text-[#666666]">
+            This is a portfolio demonstration of a cybersecurity monitoring system
+          </p>
+          <p className="text-xs text-[#555555] mt-2">
+            New user registration is disabled. Use the demo account to explore.
+          </p>
+        </div>
       </div>
     </div>
   );
