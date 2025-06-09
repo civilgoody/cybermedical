@@ -153,8 +153,8 @@ const processThreatTypes = (reports: Report[]) => {
   }
 }
 
-// Track subscription initialization
-let subscriptionInitialized = false
+// Track subscription channels per query client to prevent conflicts
+const subscriptionChannels = new WeakMap<any, any>()
 
 // Main hook for all dashboard data
 export const useDashboardData = () => {
@@ -166,11 +166,11 @@ export const useDashboardData = () => {
     ...queryConfigs.dashboard, // Use dashboard config preset
   })
 
-  // Set up real-time subscription once for all dashboard data
+  // Set up real-time subscription once per query client instance
   useEffect(() => {
-    if (subscriptionInitialized) return
+    // Check if we already have a subscription for this query client
+    if (subscriptionChannels.has(queryClient)) return
     
-    subscriptionInitialized = true
     const channel = supabase()
       .channel('dashboard-reports')
       .on(
@@ -188,9 +188,16 @@ export const useDashboardData = () => {
       )
       .subscribe()
 
+    // Store the channel reference
+    subscriptionChannels.set(queryClient, channel)
+
     return () => {
-      supabase().removeChannel(channel)
-      subscriptionInitialized = false
+      // Clean up the subscription when effect runs again or component unmounts
+      const storedChannel = subscriptionChannels.get(queryClient)
+      if (storedChannel) {
+        supabase().removeChannel(storedChannel)
+        subscriptionChannels.delete(queryClient)
+      }
     }
   }, [queryClient])
 

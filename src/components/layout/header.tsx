@@ -7,7 +7,8 @@ import { UtilityButtons } from "../shared/utility-buttons"
 import { useRouter, usePathname } from "next/navigation"
 import { supabase } from "@/utils/supabase/client"
 import { Session, AuthChangeEvent } from "@supabase/supabase-js"
-import { useProfile } from "@/context/ProfileContext"
+import { useProfile as useProfileHook } from "@/hooks/use-profile"
+import { useQueryClient } from "@tanstack/react-query"
 
 // Import Shadcn UI DropdownMenu components
 import {
@@ -29,6 +30,8 @@ export function Header() {
   const [session, setSession] = useState<Session | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { user, profile, isLoading } = useProfileHook();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     async function getSession() {
@@ -51,15 +54,26 @@ export function Header() {
   }, [])
 
   const handleSignOut = async () => {
-    const { error } = await supabase().auth.signOut()
-    if (error) {
-      console.error("Error signing out:", error)
-      return
+    try {
+      // Clear all cached queries first
+      queryClient.clear();
+      
+      // Sign out from Supabase
+      const { error } = await supabase().auth.signOut();
+      
+      if (error) {
+        console.error("Error signing out:", error);
+        return;
+      }
+      
+      // Force navigation to home page
+      router.replace("/");
+    } catch (error) {
+      console.error("Unexpected error during sign out:", error);
     }
-    router.replace("/")
-  }
+  };
 
-  const { profileLoaded, profile } = useProfile()
+  const isAuthenticated = !!session && !!user && !isLoading;
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -71,7 +85,7 @@ export function Header() {
       </div>
 
       {/* Center Navigation – Only show when signed in */}
-      {session && profileLoaded && (
+      {isAuthenticated && (
         <div className="flex-1 flex justify-center">
           <NavMenu />
         </div>
@@ -79,10 +93,10 @@ export function Header() {
 
       <div className="flex items-center gap-4">
         {/* Utility Buttons – Only show when signed in */}
-        {session && profileLoaded && <UtilityButtons />}
+        {isAuthenticated && <UtilityButtons />}
 
         {/* Profile/Region Section */}
-        {session && profileLoaded ? (
+        {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2">
@@ -129,7 +143,6 @@ export function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Button
-
                   variant="ghost"
                   className="w-full justify-start text-sm text-muted hover:bg-transparent hover:text-foreground cursor-pointer"
                   onClick={handleSignOut}
