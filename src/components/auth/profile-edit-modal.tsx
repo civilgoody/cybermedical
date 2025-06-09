@@ -4,8 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/utils/supabase/client";
-import { useProfile } from "@/context/ProfileContext";
+import { useProfile } from "@/hooks/use-profile";
 
 // Shadcn UI (Radix-based) components
 import {
@@ -48,7 +47,7 @@ export default function ProfileEditModal({
   open: openProp,
   onOpenChange: onOpenChangeProp,
 }: ProfileEditModalProps) {
-  const { profile } = useProfile();
+  const { user, profile, updateProfile, isUpdating } = useProfile();
 
   const {
     register,
@@ -68,7 +67,7 @@ export default function ProfileEditModal({
     },
   });
 
-  // When the global profile changes, update the form values.
+  // When the profile changes, update the form values.
   useEffect(() => {
     if (profile) {
       reset({
@@ -84,19 +83,16 @@ export default function ProfileEditModal({
   }, [profile, reset]);
 
   const onSubmit = async (data: ProfileFormValues) => {
-    const { data: updatedProfile, error } = await supabase()
-      .from("profiles")
-      .update(data)
-      .eq("id", profile?.id)
-      .select("*")
-      .single();
+    if (!user?.id) return;
 
-    if (error) {
-      console.error("Error updating profile:", error);
-    } else {
-      // Update the form with the newly returned data and refresh the global profile.
-      reset(updatedProfile);
+    try {
+      await updateProfile({
+        userId: user.id,
+        profile: data,
+      });
       setDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -126,6 +122,7 @@ export default function ProfileEditModal({
                 {...register("first_name")} 
                 placeholder="First Name" 
                 className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+                disabled={isUpdating}
               />
               {errors.first_name && (
                 <p className="text-red-400 text-sm mt-1">
@@ -141,6 +138,7 @@ export default function ProfileEditModal({
                 {...register("last_name")} 
                 placeholder="Last Name" 
                 className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+                disabled={isUpdating}
               />
               {errors.last_name && (
                 <p className="text-red-400 text-sm mt-1">
@@ -157,6 +155,7 @@ export default function ProfileEditModal({
               {...register("phone")} 
               placeholder="Phone Number" 
               className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+              disabled={isUpdating}
             />
             {errors.phone && (
               <p className="text-red-400 text-sm mt-1">
@@ -172,6 +171,7 @@ export default function ProfileEditModal({
               {...register("bio")} 
               placeholder="Your bio" 
               className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary min-h-[100px]"
+              disabled={isUpdating}
             />
             {errors.bio && (
               <p className="text-red-400 text-sm mt-1">{errors.bio.message}</p>
@@ -186,6 +186,7 @@ export default function ProfileEditModal({
                 {...register("country")} 
                 placeholder="Country" 
                 className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+                disabled={isUpdating}
               />
               {errors.country && (
                 <p className="text-red-400 text-sm mt-1">
@@ -201,6 +202,7 @@ export default function ProfileEditModal({
                 {...register("city")} 
                 placeholder="City" 
                 className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+                disabled={isUpdating}
               />
               {errors.city && (
                 <p className="text-red-400 text-sm mt-1">{errors.city.message}</p>
@@ -214,6 +216,7 @@ export default function ProfileEditModal({
                 {...register("post_code")} 
                 placeholder="Post Code" 
                 className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary"
+                disabled={isUpdating}
               />
               {errors.post_code && (
                 <p className="text-red-400 text-sm mt-1">
@@ -227,6 +230,7 @@ export default function ProfileEditModal({
               <Button 
                 variant="outline" 
                 className="bg-transparent border-[#1F1F1F] text-white hover:bg-[#1A1A1A] hover:text-white"
+                disabled={isUpdating}
               >
                 Cancel
               </Button>
@@ -234,8 +238,9 @@ export default function ProfileEditModal({
             <Button 
               type="submit"
               className="bg-primary hover:bg-primary/90 text-white"
+              disabled={isUpdating}
             >
-              Save Changes
+              {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

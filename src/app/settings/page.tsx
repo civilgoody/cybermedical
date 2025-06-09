@@ -1,34 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase/client";
+import { useProfile } from "@/hooks/use-profile";
 import MFASection from "@/components/auth/mfa-section";
 import InviteSection from "@/components/auth/invite-section";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [session, setSession] = useState<any>(null);
+  const { user, isLoading } = useProfile();
 
-  // On mount, check for an active session.
+  // Handle redirect in useEffect to avoid render errors
   useEffect(() => {
-    async function fetchSession() {
-      const {
-        data: { session },
-      } = await supabase().auth.getSession();
-      if (!session) {
+    if (!isLoading && !user) {
         router.push("/");
-      } else {
-        setSession(session);
-      }
     }
-    fetchSession();
-  }, [router]);
+  }, [isLoading, user, router]);
 
-  if (!session) {
+  // Show loading while checking auth or redirecting
+  if (isLoading || (!isLoading && !user)) {
     return (
-      <div className="min-h-screen bg-black p-8">
-        <div className="w-10 h-10 border-t-2 border-b-2 border-white rounded-full animate-spin mx-auto"></div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-10 h-10 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -36,7 +29,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-black p-8 px-32">
       <h1 className="text-2xl font-bold text-white mb-8">Settings</h1>
-      <div className="max-w-3xl">
+      <div className="max-w-3xl space-y-6">
         <MFASection />
         <InviteSection />
       </div>
