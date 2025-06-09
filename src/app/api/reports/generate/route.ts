@@ -46,19 +46,48 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Available attack types for reference
+    const attackTypes = [
+      "DDoS", "Phishing", "SQL Injection", "XSS", "Malware Infection", 
+      "Ransomware", "Brute Force Attack", "Man-in-the-Middle", 
+      "Zero-Day Exploit", "Insider Threat", "Network Scan"
+    ];
+
+    // Randomly select a less common attack type occasionally to ensure variety
+    const shouldUseUncommonType = Math.random() < 0.4; // 40% chance
+    const uncommonTypes = ["Zero-Day Exploit", "Insider Threat", "Man-in-the-Middle", "Network Scan", "XSS"];
+    const commonTypes = ["DDoS", "Phishing", "SQL Injection", "Malware Infection", "Ransomware", "Brute Force Attack"];
+    
+    let typeHint = "";
+    if (shouldUseUncommonType) {
+      const randomUncommon = uncommonTypes[Math.floor(Math.random() * uncommonTypes.length)];
+      typeHint = `Consider generating a ${randomUncommon} attack type to ensure variety in the security reports.`;
+    } else {
+      const randomCommon = commonTypes[Math.floor(Math.random() * commonTypes.length)];
+      typeHint = `Consider generating a ${randomCommon} attack type.`;
+    }
+
     // Generate fake security report data using Gemini
     const { object: reportData } = await generateObject({
       model: google('gemini-2.0-flash-exp'),
       schema: ReportSchema,
-      prompt: `Generate a realistic cybersecurity incident report. Include:
-        - A random attack type from the available options
-        - Appropriate severity level
-        - Detailed technical analysis with realistic IOCs
-        - Comprehensive mitigation steps
-        - Confidence score as percentage
-        - Relevant security references/CVEs
+      prompt: `Generate a realistic cybersecurity incident report with maximum variety and authenticity.
+      
+      ${typeHint}
+      
+      Available attack types: ${attackTypes.join(", ")}
+      
+      Requirements:
+      - Choose ANY attack type from the available options, prioritizing variety over common attacks
+      - Create a unique, realistic scenario that could happen in today's threat landscape
+      - Include specific technical details, IP addresses, file hashes, and domain names
+      - Vary severity levels appropriately (critical should be rare, low/medium more common)
+      - Write detailed technical analysis that sounds like a real SOC analyst
+      - Include comprehensive step-by-step mitigation procedures
+      - Provide realistic confidence score (70-95%)
+      - Reference actual CVEs, security frameworks, or tools when applicable
         
-        Make it sound like a real security incident that could happen today.`
+      Make this report unique and avoid repetitive patterns. Each report should feel like a completely different security incident.`
     });
     
     const { data, error } = await (await supabase()).from('attack_reports')
