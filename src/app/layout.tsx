@@ -1,13 +1,30 @@
 'use client';
 
-import { Header } from "@/components/layout/header";
-import { Toaster } from "@/components/ui/toaster";
-import { ProfileProvider } from "@/context/ProfileContext";
-import { queryClient } from "@/lib/query-client";
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import type React from "react";
-import "./globals.css";
+import "./globals.css"
+import type React from "react"
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Header } from "@/components/layout/header"
+import { ProfileProvider } from "@/context/ProfileContext"
+import { Toaster } from "@/components/ui/sonner"
+import { queryClient } from "@/lib/query-client"
+import { useProfile } from "@/hooks/use-profile"
+import DemoIndicator from "@/components/shared/demo-indicator"
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { user } = useProfile();
+  
+  return (
+    <>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        {children}
+        <Toaster />
+      </div>
+      <DemoIndicator userEmail={user?.email} />
+    </>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -19,11 +36,9 @@ export default function RootLayout({
       <body className="bg-black text-foreground">
         <QueryClientProvider client={queryClient}>
           <ProfileProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
+            <LayoutContent>
               {children}
-              <Toaster />
-            </div>
+            </LayoutContent>
           </ProfileProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
