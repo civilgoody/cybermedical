@@ -53,7 +53,7 @@ export function AttackReport({ created_at, severity, type, description, technica
 
   return (
     <>
-      <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl">
+      <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300" onClick={() => setShowDetail(true)}>
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-white" />

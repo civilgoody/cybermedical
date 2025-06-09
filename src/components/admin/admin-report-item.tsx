@@ -5,7 +5,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdminReport } from "./admin-report-detail-modal";
 import { supabase } from "@/utils/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface AdminReportItemProps {
   report: AdminReport;
@@ -17,7 +17,6 @@ interface AdminReportItemProps {
 export default function AdminReportItem({ report, isSelected, onSelect, onDelete }: AdminReportItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { toast } = useToast();
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening the report detail
@@ -30,16 +29,11 @@ export default function AdminReportItem({ report, isSelected, onSelect, onDelete
       .eq("id", report.id);
 
     if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete report",
-        variant: "destructive",
+      toast.error("Failed to delete report", {
+        description: "Please try again or contact support.",
       });
     } else {
-      toast({
-        title: "Success",
-        description: "Report deleted successfully",
-      });
+      toast.success("Report deleted successfully");
       onDelete(report.id);
     }
     setIsDeleting(false);

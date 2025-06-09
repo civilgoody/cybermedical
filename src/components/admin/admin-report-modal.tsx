@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 
 interface AdminReportModalProps {
@@ -23,15 +23,10 @@ interface AdminReportModalProps {
 export default function AdminReportModal({ onClose, onReportCreated }: AdminReportModalProps) {
   const [reportText, setReportText] = useState("");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleSubmit = async () => {
     if (!reportText.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a report.",
-        variant: "destructive",
-      });
+      toast.error("Please enter a report.");
       return;
     }
     setLoading(true);
@@ -40,11 +35,7 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
       data: { user },
     } = await supabase().auth.getUser();
     if (!user) {
-      toast({
-        title: "Error",
-        description: "User not found.",
-        variant: "destructive",
-      });
+      toast.error("User not found.");
       setLoading(false);
       return;
     }
@@ -57,16 +48,9 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
       });
 
     if (insertError) {
-      toast({
-        title: "Error",
-        description: insertError.message,
-        variant: "destructive",
-      });
+      toast.error(insertError.message);
     } else {
-      toast({
-        title: "Success",
-        description: "Report submitted successfully.",
-      });
+      toast.success("Report submitted successfully.");
       setReportText("");
       onReportCreated();
       onClose();
