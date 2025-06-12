@@ -1,70 +1,57 @@
 import { QueryClient } from '@tanstack/react-query'
 
-export const queryClient = new QueryClient({
+// Default configuration for all queries
+const queryConfigs = {
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes default
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      // Global defaults
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
       retry: 2,
-      refetchOnWindowFocus: false, // Prevent refetch on window focus
-      refetchOnReconnect: false, // Prevent refetch on reconnect
-      refetchInterval: false, // Disable automatic polling by default
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchOnMount: true,
+      retryDelay: (attemptIndex: number) => Math.min(2000 * 2 ** attemptIndex, 30000),
     },
-    mutations: {
-      retry: 1,
-    },
-  },
-})
-
-// Query configuration presets to reduce repetition
-export const queryConfigs = {
-  // For data that rarely changes (user info, profile)
-  stable: {
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
-    retry: 1,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchInterval: false as const,
-  },
-  
-  // For dashboard data that updates more frequently
-  dashboard: {
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    retry: 2,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true, // Do refetch on reconnect for dashboard
-    refetchInterval: 2 * 60 * 1000, // Poll every 2 minutes
-  },
-  
-  // For real-time data that should refresh often
-  realtime: {
-    staleTime: 30 * 1000, // 30 seconds
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    retry: 3,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    refetchInterval: 60 * 1000, // Poll every minute
   },
 }
 
-// Query keys for consistency
+// Create the query client
+export const queryClient = new QueryClient(queryConfigs)
+
+// Configuration exports
+export { queryConfigs }
+
+// Query key factory to maintain consistency - fixed circular reference
+const dashboardBase = ['dashboard'] as const
+const adminReportsBase = ['admin-reports'] as const
+
 export const queryKeys = {
+  // Dashboard queries
   dashboard: {
-    all: ['dashboard'] as const,
-    reports: () => [...queryKeys.dashboard.all, 'reports'] as const,
-    attackFrequency: (timeframe: string) => [...queryKeys.dashboard.all, 'attack-frequency', timeframe] as const,
-    severityBreakdown: (timeframe: string) => [...queryKeys.dashboard.all, 'severity-breakdown', timeframe] as const,
-    threatTypes: () => [...queryKeys.dashboard.all, 'threat-types'] as const,
+    all: dashboardBase,
+    reports: () => [...dashboardBase, 'reports'] as const,
+    frequency: (timeframe: string) => [...dashboardBase, 'frequency', timeframe] as const,
+    severity: (timeframe: string) => [...dashboardBase, 'severity', timeframe] as const,
+    threats: () => [...dashboardBase, 'threats'] as const,
   },
+  
+  // Admin reports queries
+  adminReports: {
+    all: adminReportsBase,
+    byUser: (userId: string) => [...adminReportsBase, 'user', userId] as const,
+  },
+  
+  // User and profile queries (maintaining backward compatibility)
   user: {
     current: ['user'] as const,
-    profile: (userId: string) => ['profile', userId] as const,
   },
+  profile: (userId: string) => ['profile', userId] as const,
+  
+  // MFA queries (maintaining backward compatibility)
   mfa: {
     all: ['mfa'] as const,
-    factors: () => [...queryKeys.mfa.all, 'factors'] as const,
+    factors: () => [['mfa'], 'factors'] as const,
   },
 } as const 
  
