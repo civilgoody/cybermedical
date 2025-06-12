@@ -1,13 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { DEMO_USER_EMAIL } from "@/lib/constants";
+import { useUser } from "@/hooks/use-profile";
 
-interface DemoIndicatorProps {
-  userEmail?: string;
-}
-
-export default function DemoIndicator({ userEmail }: DemoIndicatorProps) {
-  const isDemoUser = userEmail === DEMO_USER_EMAIL;
+export default function DemoIndicator() {
+  const { data: user } = useUser();
+  const isDemoUser = user?.email === DEMO_USER_EMAIL;
 
   if (!isDemoUser) return null;
 
