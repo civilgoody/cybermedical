@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
-import { supabase } from '@/utils/supabase/client'
+import { useMemo, useState } from 'react'
 import { queryKeys, queryConfigs } from '@/lib/query-client'
 import { ThreatType } from '@/types/supabase'
 
@@ -30,15 +29,34 @@ export interface Report {
   mitigation_steps?: MitigationSteps;
 }
 
-// Single source of truth - fetch all dashboard data once
+// Fetch data via API route instead of direct Supabase calls
 const fetchDashboardData = async (): Promise<Report[]> => {
-  const { data, error } = await supabase()
-    .from('attack_reports')
-    .select('*')
-    .order('created_at', { ascending: false })
+  console.log('📊 Fetching dashboard data via API...');
+  
+  try {
+    const response = await fetch('/api/reports', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Prevent caching to ensure fresh data
+      cache: 'no-store'
+    });
 
-  if (error) throw error
-  return data || []
+    console.log('📡 API response status:', response.status);
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Dashboard data fetched successfully via API:', { count: data?.length || 0 });
+    
+    return data || [];
+  } catch (err) {
+    console.error('💥 Dashboard API fetch threw exception:', err);
+    throw err;
+  }
 }
 
 // Helper functions to process data
@@ -153,55 +171,59 @@ const processThreatTypes = (reports: Report[]) => {
   }
 }
 
-// Track subscription channels per query client to prevent conflicts
-const subscriptionChannels = new WeakMap<any, any>()
-
 // Main hook for all dashboard data
 export const useDashboardData = () => {
-  const queryClient = useQueryClient()
+  console.log('🎯 useDashboardData hook called');
   
   const query = useQuery({
     queryKey: queryKeys.dashboard.all,
     queryFn: fetchDashboardData,
-    ...queryConfigs.dashboard, // Use dashboard config preset
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes  
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
+    refetchInterval: 3 * 60 * 1000, // Poll every 3 minutes
   })
 
-  // Set up real-time subscription once per query client instance
-  useEffect(() => {
-    // Check if we already have a subscription for this query client
-    if (subscriptionChannels.has(queryClient)) return
-    
-    const channel = supabase()
-      .channel('dashboard-reports')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'attack_reports'
-        },
-        (payload) => {
-          console.log('Real-time update:', payload)
-          // Invalidate the main dashboard query - all derived queries will update automatically
-          queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-        }
-      )
-      .subscribe()
-
-    // Store the channel reference
-    subscriptionChannels.set(queryClient, channel)
-
-    return () => {
-      // Clean up the subscription when effect runs again or component unmounts
-      const storedChannel = subscriptionChannels.get(queryClient)
-      if (storedChannel) {
-        supabase().removeChannel(storedChannel)
-        subscriptionChannels.delete(queryClient)
-      }
-    }
-  }, [queryClient])
+  console.log('📈 Dashboard query state:', { 
+    isLoading: query.isLoading, 
+    isError: query.isError, 
+    dataLength: query.data?.length,
+    error: query.error
+  });
 
   return query
+}
+
+// Manual refresh function with loading state
+export const useRefreshDashboard = () => {
+  const queryClient = useQueryClient()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  
+  const refresh = async () => {
+    if (isRefreshing) return // Prevent multiple simultaneous refreshes
+    
+    console.log('🔄 Manual dashboard refresh triggered')
+    setIsRefreshing(true)
+    
+    try {
+      // Force refetch the data immediately
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
+        queryClient.refetchQueries({ queryKey: queryKeys.dashboard.all })
+      ])
+      
+      console.log('✅ Dashboard refresh completed')
+    } catch (error) {
+      console.error('❌ Dashboard refresh failed:', error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
+  return { refresh, isRefreshing }
 }
 
 // Derived hooks that use the main dashboard data
