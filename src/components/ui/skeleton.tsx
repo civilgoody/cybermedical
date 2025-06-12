@@ -157,18 +157,26 @@ export function SkeletonBarChart() {
         <div className="h-[220px] sm:h-[300px] relative">
           {/* Simulated stacked bars */}
           <div className="absolute bottom-8 left-0 w-full h-full flex items-end justify-between gap-2 px-4">
-            {[0, 1, 2, 3, 4, 5].map((i) => {
-              const heights = [60, 80, 45, 70, 55, 90];
-              return (
-                <div key={i} className="flex-1 flex flex-col gap-0.5">
-                  <Skeleton className={`w-full opacity-60`} style={{ height: `${heights[i]}%` }} />
-                </div>
-              );
-            })}
+            {/* map wont work here. we need to manually create the bars */}
+            <div className="flex-1 flex flex-col gap-0.5">
+              <Skeleton className="w-full opacity-60 h-40" />
+            </div>
+            <div className="flex-1 flex flex-col gap-0.5">
+              <Skeleton className="w-full opacity-60 h-36" />
+            </div>
+            <div className="flex-1 flex flex-col gap-0.5">
+              <Skeleton className="w-full opacity-60 h-48" />
+            </div>
+            <div className="flex-1 flex flex-col gap-0.5">
+              <Skeleton className="w-full opacity-60 h-40" />
+            </div>
+            <div className="flex-1 flex flex-col gap-0.5">
+              <Skeleton className="w-full opacity-60 h-60" />
+            </div>
           </div>
           
           {/* Legend */}
-          <div className="absolute bottom-0 left-0 w-full flex justify-center gap-2 sm:gap-4 flex-wrap pt-2">
+          <div className="absolute bottom-2 left-0 w-full flex justify-center gap-2 sm:gap-4 flex-wrap pt-2">
             {['Low', 'Medium', 'High', 'Critical'].map((label, i) => (
               <div key={label} className="flex items-center gap-1">
                 <Skeleton className="w-2 h-2 rounded-full" />
@@ -209,7 +217,7 @@ export function SkeletonDoughnutChart() {
 
         {/* Legend */}
         <div className="mt-4 sm:mt-6 flex justify-center gap-2 sm:gap-4 flex-wrap max-h-[60px] sm:max-h-[80px] overflow-y-auto">
-          {[0, 1, 2, 3, 4].map((i) => (
+          {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center gap-1 sm:gap-2 bg-[#1A1A1A] px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
               <Skeleton className="w-2 h-2 rounded-full" />
               <Skeleton className="w-12 sm:w-16 h-3" />
