@@ -10,13 +10,17 @@ import { Eye, EyeOff, Play, User } from 'lucide-react';
 import { FaGoogle } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { DEMO_USER_EMAIL, DEMO_USER_PASSWORD } from '@/lib/constants';
+import { useProfile } from '@/hooks/use-profile';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [demoAuthLoading, setDemoAuthLoading] = useState(false);
+  
+  // Get user state to know when authentication is complete
+  const { user, isLoading: profileLoading } = useProfile();
 
   // Handle URL error parameters on mount
   useEffect(() => {
@@ -45,52 +49,77 @@ export default function Login() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setAuthLoading(true);
 
-    const { error } = await supabase().auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      toast.error("Login Failed", {
-        description: error.message,
+    try {
+      const { error } = await supabase().auth.signInWithPassword({
+        email,
+        password,
       });
+
+      if (error) {
+        toast.error("Login Failed", {
+          description: error.message,
+        });
+        setAuthLoading(false); // Only clear loading on error
+      }
+      // Don't clear loading on success - let useProfile handle it
+    } catch (error) {
+      toast.error("Login Failed", {
+        description: "An unexpected error occurred",
+      });
+      setAuthLoading(false);
     }
-    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+    setAuthLoading(true);
+    
+    try {
       const { error } = await supabase().auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-
-    if (error) {
-      toast.error("Google Login Failed", {
-        description: error.message,
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
       });
-      setLoading(false);
+
+      if (error) {
+        toast.error("Google Login Failed", {
+          description: error.message,
+        });
+        setAuthLoading(false);
+      }
+      // Don't clear loading on success - let redirect handle it
+    } catch (error) {
+      toast.error("Google Login Failed", {
+        description: "An unexpected error occurred",
+      });
+      setAuthLoading(false);
     }
   };
 
   const handleDemoLogin = async () => {
-    setDemoLoading(true);
+    setDemoAuthLoading(true);
 
-    const { error } = await supabase().auth.signInWithPassword({
-      email: DEMO_USER_EMAIL,
-      password: DEMO_USER_PASSWORD,
-    });
-
-    if (error) {
-      toast.error("Demo Login Failed", {
-        description: "Please try again or contact support.",
+    try {
+      const { error } = await supabase().auth.signInWithPassword({
+        email: DEMO_USER_EMAIL,
+        password: DEMO_USER_PASSWORD,
       });
+
+      if (error) {
+        toast.error("Demo Login Failed", {
+          description: "Please try again or contact support.",
+        });
+        setDemoAuthLoading(false); // Only clear loading on error
+      }
+      // Don't clear loading on success - let useProfile handle it
+    } catch (error) {
+      toast.error("Demo Login Failed", {
+        description: "An unexpected error occurred",
+      });
+      setDemoAuthLoading(false);
     }
-    setDemoLoading(false);
   };
 
   const fillDemoCredentials = () => {
@@ -98,6 +127,17 @@ export default function Login() {
     setPassword(DEMO_USER_PASSWORD);
     toast.success("Demo credentials filled in");
   };
+
+  // Clear auth loading states when user is authenticated
+  useEffect(() => {
+    if (user) {
+      setAuthLoading(false);
+      setDemoAuthLoading(false);
+    }
+  }, [user]);
+
+  // Combined loading state - show loading if any auth operation is in progress OR profile is loading
+  const isLoading = authLoading || demoAuthLoading || profileLoading;
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-6">
@@ -124,11 +164,11 @@ export default function Login() {
             </div>
             <Button 
               onClick={handleDemoLogin}
-              disabled={demoLoading || loading}
+              disabled={isLoading}
               size="lg"
               className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-12"
             >
-              {demoLoading ? (
+              {(demoAuthLoading || (profileLoading && demoAuthLoading)) ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
                   Loading Demo...
@@ -162,6 +202,7 @@ export default function Login() {
               variant="ghost"
               size="sm"
               className="text-primary hover:text-primary/80 hover:bg-primary/10 text-xs"
+              disabled={isLoading}
             >
               <User className="w-3 h-3 mr-1" />
               Use Demo Credentials
@@ -179,7 +220,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="bg-[#1A1A1A] border-[#333333] text-white placeholder:text-[#666666] focus-visible:ring-primary h-12"
-                disabled={loading || demoLoading}
+                disabled={isLoading}
                 required
               />
             </div>
@@ -194,14 +235,14 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="bg-[#1A1A1A] border-[#333333] text-white placeholder:text-[#666666] focus-visible:ring-primary pr-12 h-12"
-                  disabled={loading || demoLoading}
+                  disabled={isLoading}
                   required
                 />
           <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#666666] hover:text-primary transition-colors"
-                  disabled={loading || demoLoading}
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -209,10 +250,10 @@ export default function Login() {
             </div>
             <Button 
               type="submit" 
-              disabled={loading || demoLoading}
+              disabled={isLoading}
               className="w-full bg-[#1A1A1A] hover:bg-[#242424] text-white border border-[#333333] h-12"
             >
-              {loading ? (
+              {(authLoading || (profileLoading && authLoading)) ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
                   Signing in...
@@ -228,12 +269,21 @@ export default function Login() {
         <Card className="bg-[#141414] border-[#1F1F1F] p-8">
           <Button
             onClick={handleGoogleLogin}
-            disabled={loading || demoLoading}
+            disabled={isLoading}
             variant="outline"
             className="w-full bg-white hover:text-primary text-black border-gray-300 h-12 font-medium"
           >
-            <FaGoogle className="w-5 h-5 mr-3" />
-            Continue with Google
+            {(authLoading || (profileLoading && authLoading)) ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-t-2 border-black rounded-full animate-spin" />
+                Signing in...
+              </div>
+            ) : (
+              <>
+                <FaGoogle className="w-5 h-5 mr-3" />
+                Continue with Google
+              </>
+            )}
           </Button>
         </Card>
 
