@@ -8,12 +8,9 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Toaster } from "@/components/ui/sonner"
 import { queryClient } from "@/lib/query-client"
-import { useProfile } from "@/hooks/use-profile"
 import DemoIndicator from "@/components/shared/demo-indicator"
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { user } = useProfile();
-  
   return (
     <>
       <div className="min-h-screen flex flex-col">
@@ -24,7 +21,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <Footer />
         <Toaster />
       </div>
-      <DemoIndicator userEmail={user?.email} />
+      <DemoIndicator />
     </>
   );
 }
@@ -38,9 +35,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-black text-foreground">
         <QueryClientProvider client={queryClient}>
-          <LayoutContent>
-            {children}
-          </LayoutContent>
+          <LayoutContent>{children}</LayoutContent>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>
