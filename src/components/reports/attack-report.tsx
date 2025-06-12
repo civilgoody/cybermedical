@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card"
-import { AlertTriangle, Clock, ChevronDown } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
-import { AttackReportDetail } from "./attack-report-detail"
+import { Card } from "@/components/ui/card";
+import { AlertTriangle, Clock, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { AttackReportDetail } from "./attack-report-detail";
 
 interface TechnicalAnalysis {
   technical_evaluation: string;
@@ -22,29 +22,48 @@ interface MitigationSteps {
 interface AttackReportProps {
   created_at: string;
   severity: "low" | "medium" | "high" | "critical";
-  type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat";
+  type:
+    | "DDoS"
+    | "Phishing"
+    | "SQL Injection"
+    | "XSS"
+    | "Malware Infection"
+    | "Ransomware"
+    | "Brute Force Attack"
+    | "Man-in-the-Middle"
+    | "Zero-Day Exploit"
+    | "Insider Threat";
   description: string;
   technical_analysis: TechnicalAnalysis;
   mitigation_steps?: MitigationSteps;
 }
 
-export function AttackReport({ created_at, severity, type, description, technical_analysis, mitigation_steps }: AttackReportProps) {
+export function AttackReport({
+  created_at,
+  severity,
+  type,
+  description,
+  technical_analysis,
+  mitigation_steps,
+}: AttackReportProps) {
   const [showDetail, setShowDetail] = useState(false);
 
   // Format the date
-  const formattedDate = new Date(created_at).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
+  const formattedDate = new Date(created_at).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
   });
 
   // Capitalize severity for display
   const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1);
   // Capitalize alert for display
-  const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : "Unknown";
+  const displayType = type
+    ? type.charAt(0).toUpperCase() + type.slice(1)
+    : "Unknown";
 
   // Create a short preview of the technical analysis
   const previewTechnicalAnalysis =
@@ -53,17 +72,27 @@ export function AttackReport({ created_at, severity, type, description, technica
 
   return (
     <>
-      <Card className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300" onClick={() => setShowDetail(true)}>
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-white" />
-            <span className="text-white text-base">Attack Report</span>
+      <Card
+        className="bg-[#141414] border-[#1F1F1F] p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300"
+        onClick={() => setShowDetail(true)}
+      >
+        <div className="flex items-center justify-between gap-4 mb-4">
+          {/* Left side - can shrink and truncate */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <AlertTriangle className="w-5 h-5 text-white flex-shrink-0" />
+            <span className="text-white text-sm truncate">Attack Report</span>
           </div>
-          <div className="flex gap-2">
-            <Badge variant="outline" className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5">
+          <div className="flex flex-wrap gap-2 col-span-1 justify-end">
+            <Badge
+              variant="outline"
+              className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5 whitespace-nowrap"
+            >
               {displayType}
             </Badge>
-            <Badge variant="outline" className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5">
+            <Badge
+              variant="outline"
+              className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5 whitespace-nowrap"
+            >
               {displaySeverity}
             </Badge>
           </div>
@@ -82,7 +111,9 @@ export function AttackReport({ created_at, severity, type, description, technica
 
           <div>
             <h4 className="text-[#FF29A8] text-base mb-1">AI Analysis</h4>
-            <p className="text-white text-sm line-clamp-3">{previewTechnicalAnalysis}</p>
+            <p className="text-white text-sm line-clamp-3">
+              {previewTechnicalAnalysis}
+            </p>
           </div>
 
           <button
@@ -90,7 +121,7 @@ export function AttackReport({ created_at, severity, type, description, technica
             className="flex items-center gap-1 text-[#666666] text-sm hover:text-[#888888] transition-colors"
           >
             Read more
-          <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4" />
           </button>
         </div>
       </Card>
@@ -106,6 +137,5 @@ export function AttackReport({ created_at, severity, type, description, technica
         mitigation_steps={mitigation_steps}
       />
     </>
-  )
+  );
 }
-
