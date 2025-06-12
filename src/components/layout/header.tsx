@@ -81,11 +81,11 @@ export function Header() {
       {/* Right side: Utility buttons + Profile */}
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Utility Buttons – Only show when signed in and on larger screens */}
-        {isAuthenticated && (
+        {/* {isAuthenticated && (
           <div className="hidden lg:block">
             <UtilityButtons />
           </div>
-        )}
+        )} */}
 
         {/* Profile/Region Section */}
         {isAuthenticated ? (

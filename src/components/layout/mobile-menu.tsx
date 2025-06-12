@@ -76,13 +76,13 @@ export function MobileMenu() {
                 <span>Dashboard</span>
               </Link>
               
-              <button 
+              {/* <button 
                 onClick={closeMenu}
                 className="flex items-center gap-3 text-muted hover:text-foreground transition-colors text-sm px-4 py-3 rounded-lg"
               >
                 <Bell className="w-5 h-5" />
                 <span>Alerts</span>
-              </button>
+              </button> */}
               
               <Link
                 href="/settings"
@@ -146,7 +146,7 @@ export function MobileMenu() {
             </div>
 
             {/* Utility Actions */}
-            <div className="border-t border-[#1F1F1F] pt-4">
+            {/* <div className="border-t border-[#1F1F1F] pt-4">
               <h3 className="text-sm font-medium text-muted mb-3 px-4">Quick Actions</h3>
               <div className="flex flex-col gap-2 px-4">
                 <button 
@@ -175,7 +175,7 @@ export function MobileMenu() {
                   <span className="w-2 h-2 bg-red-500 rounded-full ml-auto"></span>
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </SheetContent>
       </Sheet>

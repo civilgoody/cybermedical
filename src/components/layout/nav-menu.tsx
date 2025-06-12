@@ -22,10 +22,10 @@ export function NavMenu() {
         <RxDashboard className="w-4 h-4" />
         <span>Dashboard</span>
       </Link>
-      <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
+      {/* <button className="flex items-center gap-2 text-[#666666] hover:text-white transition-colors">
         <Bell className="w-4 h-4" />
         <span className="text-sm">Alerts</span>
-      </button>
+      </button> */}
       <AdminReportsDropdown />
       <Link
         href="/settings"
