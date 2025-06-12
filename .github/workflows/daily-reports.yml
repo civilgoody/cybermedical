@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Generate and Submit Report
+      - name: Generate Random Number of Security Reports
         run: |
           curl -f -X POST "${{ secrets.API_ENDPOINT }}" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.API_KEY }}" \
-            -d '{}'
+            -d '{}' # Empty body triggers random 1-10 reports generation
         env:
           # Add any environment variables your API needs
           NODE_ENV: production
