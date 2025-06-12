@@ -1,14 +1,12 @@
 import { ChevronDown, LogOut } from "lucide-react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
 import Link from "next/link"
 import { NavMenu } from "./nav-menu"
 import { UtilityButtons } from "../shared/utility-buttons"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { supabase } from "@/utils/supabase/client"
-import { Session, AuthChangeEvent } from "@supabase/supabase-js"
 import { useProfile as useProfileHook } from "@/hooks/use-profile"
-import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 // Import Shadcn UI DropdownMenu components
 import {
@@ -27,53 +25,35 @@ import { Button } from "@/components/ui/button"
 import { FiUser } from "react-icons/fi"
 
 export function Header() {
-  const [session, setSession] = useState<Session | null>(null)
   const router = useRouter()
-  const pathname = usePathname()
   const { user, profile, isLoading } = useProfileHook();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    async function getSession() {
-      const {
-        data: { session: currentSession },
-      } = await supabase().auth.getSession()
-      setSession(currentSession)
-    }
-    getSession()
-
-    const {
-      data: { subscription },
-    } = supabase().auth.onAuthStateChange(
-      (_event: AuthChangeEvent, session: Session | null) => {
-        setSession(session)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
 
   const handleSignOut = async () => {
     try {
-      // Clear all cached queries first
-      queryClient.clear();
+      console.log('🚪 Starting sign out process...');
       
-      // Sign out from Supabase
+      // Sign out from Supabase - the useProfile hook will handle clearing cache
       const { error } = await supabase().auth.signOut();
       
       if (error) {
         console.error("Error signing out:", error);
+        toast.error("Sign out failed", {
+          description: error.message
+        });
         return;
       }
       
-      // Force navigation to home page
-      router.replace("/");
+      console.log('✅ Successfully signed out');
+      
     } catch (error) {
       console.error("Unexpected error during sign out:", error);
+      toast.error("Sign out failed", {
+        description: "An unexpected error occurred"
+      });
     }
   };
 
-  const isAuthenticated = !!session && !!user && !isLoading;
+  const isAuthenticated = !!user && !isLoading;
 
   return (
     <div className="flex items-center justify-between px-4 h-16 mt-4 bg-black">
@@ -100,9 +80,9 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-3 py-2">
-                {session.user?.user_metadata?.avatar_url ? (
+                {user?.user_metadata?.avatar_url ? (
                   <Image
-                    src={session.user.user_metadata.avatar_url}
+                    src={user.user_metadata.avatar_url}
                     alt="Profile"
                     width={32}
                     height={32}
@@ -110,17 +90,17 @@ export function Header() {
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-primary text-foreground flex items-center justify-center">
-                    {session?.user?.email?.[0].toUpperCase()}
+                    {user?.email?.[0].toUpperCase()}
                   </div>
                 )}
                 <div className="flex-col items-start md:flex">
                   <span className="text-sm font-medium text-foreground truncate max-w-[110px]">
                     {profile
                       ? `${profile.first_name} ${profile.last_name}`
-                      : session.user?.email?.split("@")[0]}
+                      : user.email?.split("@")[0]}
                   </span>
                   <span className="text-xs text-muted truncate max-w-[110px]">
-                    {session.user?.email}
+                    {user.email}
                   </span>
                 </div>
                 <ChevronDown className="w-4 h-4 text-muted" />
