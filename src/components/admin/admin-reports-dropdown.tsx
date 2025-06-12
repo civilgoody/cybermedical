@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/utils/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,46 +9,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import AdminReportModal from "./admin-report-modal";
-import AdminReportDetailModal, { AdminReport } from "./admin-report-detail-modal";
+import AdminReportDetailModal from "./admin-report-detail-modal";
 import AdminReportItem from "./admin-report-item";
 import { RxPlus } from "react-icons/rx";
+import { useAdminReports, AdminReport } from "@/hooks/use-admin-reports";
 
 export default function AdminReportsDropdown() {
-  const [reports, setReports] = useState<AdminReport[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: reports = [], isLoading, error } = useAdminReports();
   const [selectedReport, setSelectedReport] = useState<AdminReport | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const fetchReports = async () => {
-    setLoading(true);
-    const { data, error } = await supabase()
-      .from("admin_reports")
-      .select(`
-        *,
-        profiles:admin (
-          first_name
-        )
-      `)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error("Error fetching admin reports:", error.message);
-    } else {
-      setReports(data as AdminReport[]);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (open) {
-      fetchReports();
-    }
-  }, [open]);
+  // Get only the first 10 reports for the dropdown
+  const displayReports = reports.slice(0, 10);
 
   const handleDelete = (id: string) => {
-    setReports(reports.filter(report => report.id !== id));
+    // Optimistic deletes are handled by the useDeleteAdminReport hook
+    // so we just need to clear selection if it's the deleted report
     if (selectedReport?.id === id) {
       setSelectedReport(null);
     }
@@ -79,17 +55,21 @@ export default function AdminReportsDropdown() {
             </Button>
           </div>
           <div className="h-[280px] custom-scrollbar overflow-y-auto">
-            {loading ? (
+            {isLoading ? (
               <div className="flex items-center justify-center h-20">
                 <LoadingSpinner size="sm" />
               </div>
-            ) : reports.length === 0 ? (
+            ) : error ? (
+              <div className="flex items-center justify-center h-20 text-red-400">
+                Error loading reports
+              </div>
+            ) : displayReports.length === 0 ? (
               <div className="flex items-center justify-center h-20 text-muted-foreground">
                 No reports found.
               </div>
             ) : (
               <div className="space-y-2 pr-2">
-                {reports.map((report) => (
+                {displayReports.map((report) => (
                   <AdminReportItem
                     key={report.id}
                     report={report}
@@ -104,7 +84,7 @@ export default function AdminReportsDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
       {showModal && (
-        <AdminReportModal onClose={() => setShowModal(false)} onReportCreated={fetchReports} />
+        <AdminReportModal onClose={() => setShowModal(false)} />
       )}
       {selectedReport && (
         <AdminReportDetailModal report={selectedReport} onClose={() => setSelectedReport(null)} />

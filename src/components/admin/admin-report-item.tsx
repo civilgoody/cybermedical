@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AdminReport } from "./admin-report-detail-modal";
-import { supabase } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { useDeleteAdminReport, AdminReport } from "@/hooks/use-admin-reports";
 
 interface AdminReportItemProps {
   report: AdminReport;
@@ -16,27 +15,19 @@ interface AdminReportItemProps {
 
 export default function AdminReportItem({ report, isSelected, onSelect, onDelete }: AdminReportItemProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteReportMutation = useDeleteAdminReport();
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening the report detail
-    if (isDeleting) return;
 
-    setIsDeleting(true);
-    const { error } = await supabase()
-      .from("admin_reports")
-      .delete()
-      .eq("id", report.id);
-
-    if (error) {
+    try {
+      await deleteReportMutation.mutateAsync(report.id);
+      onDelete(report.id); // Notify parent to clear selection if needed
+    } catch (error) {
       toast.error("Failed to delete report", {
         description: "Please try again or contact support.",
       });
-    } else {
-      toast.success("Report deleted successfully");
-      onDelete(report.id);
     }
-    setIsDeleting(false);
   };
 
   return (
@@ -65,7 +56,7 @@ export default function AdminReportItem({ report, isSelected, onSelect, onDelete
               size="icon"
               className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
               onClick={handleDelete}
-              disabled={isDeleting}
+              disabled={deleteReportMutation.isPending}
             >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Delete report</span>

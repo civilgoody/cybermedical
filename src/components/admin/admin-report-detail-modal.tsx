@@ -3,16 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-export interface AdminReport {
-  id: string;
-  admin: string;
-  reports: string;
-  created_at: string;
-  profiles?: {
-    first_name: string;
-  } | null;
-}
+import { AdminReport } from "@/hooks/use-admin-reports";
 
 interface AdminReportDetailModalProps {
   report: AdminReport;
