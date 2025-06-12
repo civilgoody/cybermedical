@@ -10,22 +10,19 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
   const { user, isLoading } = useProfile();
 
-  // Fix hydration mismatch
+  // Fix hydration mismatch - supabase takes a moment to load the user
   useEffect(() => {
-    setIsMounted(true);
+    setTimeout(() => {
+      setIsMounted(true);
+    }, 1000);
   }, []);
 
   // Don't render anything until mounted (prevents hydration mismatch)
-  if (!isMounted) {
-    return <LoadingScreen message="Loading dashboard..." />;
-  }
-
-  // Show login if no user
-  if (!user) {
-    return <Login />;
+  if (!isMounted && isLoading) {
+    return <LoadingScreen message="Initializing..." />;
   }
 
   // User is authenticated, show dashboard
-  return <Dashboard />;
+  return !user ? <Login /> : <Dashboard />;
 }
 

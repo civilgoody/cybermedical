@@ -60,7 +60,6 @@ export function useMFA() {
   } = useQuery({
     queryKey: queryKeys.mfa.factors(),
     queryFn: fetchMFAFactors,
-    ...queryConfigs.stable,
   });
 
   // Derived state
