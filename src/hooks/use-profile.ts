@@ -1,7 +1,7 @@
 import { queryConfigs, queryKeys } from '@/lib/query-client';
 import { supabase } from '@/utils/supabase/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 // Define a type for the profile
 interface Profile {
@@ -21,15 +21,19 @@ interface User {
   user_metadata?: {
     full_name?: string;
     name?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
     [key: string]: any;
   };
+  [key: string]: any; // Allow additional properties from Supabase
 }
 
 // Fetch current user
 const fetchUser = async (): Promise<User | null> => {
   const { data: { user }, error } = await supabase().auth.getUser()
   if (error) throw error
-  return user
+  return user as User | null
 }
 
 // Fetch user profile
@@ -38,9 +42,12 @@ const fetchProfile = async (userId: string): Promise<Profile | null> => {
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .maybeSingle()
+    .single()
   
-  if (error) throw error
+  if (error && error.code !== 'PGRST116') { // Not found is OK
+    throw error
+  }
+  
   return data
 }
 
@@ -56,155 +63,140 @@ const upsertProfile = async ({ userId, profile }: { userId: string; profile: Par
   return data
 }
 
-// Extract names from user metadata
-const extractNamesFromMetadata = (user: User) => {
-  const metadata = user.user_metadata || {}
-  const fullName = metadata.full_name || metadata.name || ''
-  const nameParts = fullName.trim().split(' ')
-  const firstName = nameParts.shift() || ''
-  const lastName = nameParts.join(' ')
-  return { firstName, lastName }
-}
-
-// Main hook for user data
+// Main hook for user data with hydration fix
 export const useUser = () => {
   const queryClient = useQueryClient()
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Fix hydration mismatch - don't render until mounted
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
-    // Listen for auth state changes and refetch user data
+    if (!isMounted) return
+
+    // Listen for auth state changes only after mounting
     const { data: authListener } = supabase().auth.onAuthStateChange(
       (event, session) => {
-        if (event === 'SIGNED_IN') {
-          // Refetch user data when signed in
+        console.log('👤 User hook auth change:', event, { hasSession: !!session });
+        
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          // Invalidate and refetch user data
+          console.log('🔄 Invalidating user data...');
           queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
+          queryClient.refetchQueries({ queryKey: queryKeys.user.current })
         } else if (event === 'SIGNED_OUT') {
-          // Clear user data when signed out
+          // Immediately set user data to null and invalidate
+          console.log('❌ Clearing user data in hook...');
           queryClient.setQueryData(queryKeys.user.current, null)
+          queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
         }
       }
     )
 
     return () => authListener.subscription.unsubscribe()
-  }, [queryClient])
+  }, [queryClient, isMounted])
 
-  return useQuery({
+  const query = useQuery({
     queryKey: queryKeys.user.current,
-    queryFn: fetchUser,
-    ...queryConfigs.stable,
-    retry: 3, // Override the stable config retry
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    queryFn: async () => {
+      if (!isMounted) return null // Don't fetch until mounted
+      
+      console.log('📊 Fetching user data...');
+      const result = await fetchUser();
+      console.log('👤 User data result:', { hasUser: !!result, userId: result?.id });
+      return result;
+    },
+    enabled: isMounted, // Only run query after component is mounted
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    retry: 1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retryDelay: (attemptIndex) => Math.min(2000 * 2 ** attemptIndex, 30000),
   })
-}
 
-// Hook for profile data
-export const useProfile = () => {
-  const queryClient = useQueryClient()
-  const { data: user, isLoading: userLoading } = useUser()
-  const initializationAttempted = useRef(false)
-  const lastUserId = useRef<string | null>(null)
-
-  // Reset initialization when user changes
-  if (user?.id !== lastUserId.current) {
-    initializationAttempted.current = false
-    lastUserId.current = user?.id || null
+  // Return null data if not mounted to prevent hydration mismatch
+  if (!isMounted) {
+    return {
+      ...query,
+      data: null,
+      isLoading: true,
+      error: null
+    }
   }
 
+  return query
+}
+
+// Hook for profile data with mounted state
+export const useProfile = () => {
+  const queryClient = useQueryClient()
+  const [isMounted, setIsMounted] = useState(false)
+  const { data: user, isLoading: userLoading, error: userError } = useUser()
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const profileQuery = useQuery({
-    queryKey: user?.id ? queryKeys.user.profile(user.id) : queryKeys.user.profile('no-user'),
+    queryKey: user?.id ? queryKeys.profile(user.id) : queryKeys.profile('no-user'),
     queryFn: () => user?.id ? fetchProfile(user.id) : null,
-    enabled: !!user?.id,
-    ...queryConfigs.stable,
-    retry: 2, // Retry profile fetching
-    retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 5000),
+    enabled: !!user?.id && isMounted,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+    retry: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
-  // Separate mutation for initialization (internal)
-  const initializationMutation = useMutation({
-    mutationFn: upsertProfile,
-    onSuccess: (data) => {
-      if (user?.id) {
-        queryClient.setQueryData(queryKeys.user.profile(user.id), data)
-      }
-    },
-  })
-
-  // Separate mutation for user updates (external)
+  // Mutation for profile updates
   const updateMutation = useMutation({
     mutationFn: upsertProfile,
     onSuccess: (data) => {
       if (user?.id) {
-        queryClient.setQueryData(queryKeys.user.profile(user.id), data)
+        queryClient.setQueryData(queryKeys.profile(user.id), data)
       }
     },
   })
 
-  // Handle profile initialization - only run once per user
-  useEffect(() => {
-    if (!user?.id || 
-        userLoading || 
-        profileQuery.isLoading || 
-        initializationMutation.isPending ||
-        initializationAttempted.current) {
-      return
+  // Return safe defaults if not mounted
+  if (!isMounted) {
+    return {
+      user: null,
+      userLoading: true,
+      userError: null,
+      profile: null,
+      profileLoading: false,
+      profileError: null,
+      isLoading: true,
+      error: null,
+      updateProfile: updateMutation.mutateAsync,
+      isUpdating: false,
+      updateError: null,
     }
-
-    const initializeProfile = async () => {
-      initializationAttempted.current = true
-
-      try {
-        // Wait for profile query to complete
-        if (profileQuery.data === undefined) {
-          return // Still loading
-        }
-
-        // Create profile if it doesn't exist
-        if (profileQuery.data === null) {
-          const { firstName, lastName } = extractNamesFromMetadata(user)
-          
-          await initializationMutation.mutateAsync({
-            userId: user.id,
-            profile: {
-              first_name: firstName,
-              last_name: lastName,
-            }
-          })
-          return
-        }
-
-        // Update profile if names are missing
-        if (profileQuery.data && (!profileQuery.data.first_name || !profileQuery.data.last_name)) {
-          const { firstName, lastName } = extractNamesFromMetadata(user)
-          
-          await initializationMutation.mutateAsync({
-            userId: user.id,
-            profile: {
-              ...profileQuery.data,
-              first_name: firstName,
-              last_name: lastName,
-            }
-          })
-        }
-      } catch (error) {
-        console.error('Error initializing profile:', error)
-        // Reset flag on error so we can try again if needed
-        initializationAttempted.current = false
-      }
-    }
-
-    // Only run once we have definitive data (not undefined)
-    if (profileQuery.data !== undefined) {
-      initializeProfile()
-    }
-  }, [user?.id, profileQuery.data]) // Minimal dependencies
+  }
 
   return {
+    // User data
     user,
+    userLoading,
+    userError,
+    
+    // Profile data
     profile: profileQuery.data,
-    isLoading: userLoading || profileQuery.isLoading,
-    error: profileQuery.error,
-    isReady: !userLoading && !profileQuery.isLoading && !!user,
+    profileLoading: profileQuery.isLoading,
+    profileError: profileQuery.error,
+    
+    // Simple loading state - only block for user, not profile
+    isLoading: userLoading,
+    error: userError || profileQuery.error,
+    
+    // Mutation methods
     updateProfile: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
+    updateError: updateMutation.error,
   }
 } 
  
