@@ -15,7 +15,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!isLoading && !user) {
         router.push("/");
-    }
+      }
   }, [isLoading, user, router]);
 
   // Show loading while checking auth or redirecting
@@ -24,8 +24,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-8 px-32">
-      <h1 className="text-2xl font-bold text-white mb-8">Settings</h1>
+    <div className="min-h-screen bg-black p-4 sm:p-8 lg:px-32">
+      <h1 className="text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8">Settings</h1>
       <div className="max-w-3xl space-y-6">
         <MFASection />
         <InviteSection />

@@ -87,10 +87,10 @@ export async function POST(request: Request) {
       const timeOffset = Math.floor(Math.random() * 60 * 60 * 1000); // Random offset up to 1 hour
       const reportTime = new Date(Date.now() - timeOffset).toISOString();
 
-      // Generate fake security report data using Gemini
-      const { object: reportData } = await generateObject({
-        model: google('gemini-2.0-flash-exp'),
-        schema: ReportSchema,
+    // Generate fake security report data using Gemini
+    const { object: reportData } = await generateObject({
+      model: google('gemini-2.0-flash-exp'),
+      schema: ReportSchema,
         prompt: `Generate a realistic cybersecurity incident report with maximum variety and authenticity. This is report ${i + 1} of ${count}.
         
         ${typeHint}
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         - Make this distinct from other reports in this batch
           
         Make this report unique and avoid repetitive patterns. Each report should feel like a completely different security incident.`
-      });
+    });
       
       const { data, error } = await (await supabase()).from('attack_reports')
         .insert({
@@ -128,8 +128,8 @@ export async function POST(request: Request) {
       if (error) {
         console.error('Database error for report', i + 1, ':', error);
         throw error;
-      }
-      
+    }
+
       generatedReports.push(data);
     }
     

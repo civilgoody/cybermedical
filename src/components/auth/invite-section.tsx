@@ -57,7 +57,7 @@ export default function InviteSection() {
         } else if (result.suggestion) {
           toast.error("Invitation Failed", {
             description: result.suggestion,
-          });
+      });
         } else {
           toast.error("Failed to send invitation", {
             description: result.error || "Please try again.",
@@ -101,7 +101,7 @@ export default function InviteSection() {
         <div className="mb-6 p-4 bg-amber-950/20 border border-amber-900/30 rounded-lg">
           <p className="text-amber-400 text-sm">
             🔒 You must enable MFA before sending admin invitations for security purposes.
-          </p>
+      </p>
         </div>
       )}
 

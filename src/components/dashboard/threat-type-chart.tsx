@@ -6,7 +6,7 @@ import { MoreVertical } from "lucide-react"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, type ChartData } from "chart.js"
 import { useThreatTypes } from "@/hooks/use-dashboard-data"
-import { SkeletonChart } from "@/components/ui/skeleton"
+import { SkeletonDoughnutChart } from "@/components/ui/skeleton"
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -61,22 +61,24 @@ export default function ThreatTypeChart() {
     return data ? Object.fromEntries(data.topThreats) : {}
   }, [data])
 
+  if (isLoading) {
+    return <SkeletonDoughnutChart />;
+  }
+
   return (
-    <Card className="bg-[#141414] border-[#1F1F1F] p-6 rounded-xl h-[400px] relative overflow-hidden">
+    <Card className="bg-[#141414] border-[#1F1F1F] p-4 sm:p-6 rounded-xl h-[350px] sm:h-[400px] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-purple-900/20" />
       <div className="relative">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-white">Threat Type</h3>
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-white">Threat Type</h3>
           <button className="text-[#666666] hover:text-[#888888] transition-colors">
-            <MoreVertical className="w-5 h-5" />
+            <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Chart Container */}
-        <div className="relative h-[220px]">
-          {isLoading ? (
-            <SkeletonChart />
-          ) : error ? (
+        <div className="relative h-[160px] sm:h-[220px]">
+          {error ? (
             <div className="flex items-center justify-center h-full text-red-400">
               Error loading data
             </div>
@@ -96,6 +98,8 @@ export default function ThreatTypeChart() {
                       borderWidth: 0,
                       cornerRadius: 8,
                       displayColors: true,
+                      titleFont: { size: 12 },
+                      bodyFont: { size: 11 },
                       callbacks: {
                         label: (context) => {
                           const value = context.raw as number;
@@ -113,8 +117,8 @@ export default function ThreatTypeChart() {
               {/* Center Count */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white">{data?.totalThreats || 0}</div>
-                  <div className="text-sm text-[#666666]">Total Threats</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-white">{data?.totalThreats || 0}</div>
+                  <div className="text-xs sm:text-sm text-[#666666]">Total Threats</div>
                 </div>
               </div>
             </>
@@ -122,17 +126,17 @@ export default function ThreatTypeChart() {
         </div>
 
         {/* Custom Legend placed BELOW the chart container */}
-        {!isLoading && !error && (
-          <div className="mt-6 flex justify-center gap-4 flex-wrap max-h-[80px] overflow-y-auto custom-scrollbar">
+        {!error && (
+          <div className="mt-4 sm:mt-6 flex justify-center gap-2 sm:gap-4 flex-wrap max-h-[60px] sm:max-h-[80px] overflow-y-auto custom-scrollbar">
             {Object.entries(threatCounts).map(([type, count]) => (
-              <div key={type} className="flex items-center gap-2 bg-[#1A1A1A] px-3 py-1.5 rounded-full">
+              <div key={type} className="flex items-center gap-1 sm:gap-2 bg-[#1A1A1A] px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
                 <div 
                   className="w-2 h-2 rounded-full" 
                   style={{ backgroundColor: COLORS[type] || '#666666' }}
                 />
-                <span className="text-sm text-white">{type}</span>
+                <span className="text-xs text-white truncate max-w-[80px] sm:max-w-none">{type}</span>
                 <span 
-                  className="text-sm ml-1" 
+                  className="text-xs ml-1" 
                   style={{ color: COLORS[type] || '#666666' }}
                 >
                   {count}

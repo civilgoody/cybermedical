@@ -261,3 +261,4 @@ console.log('Query status:', { isLoading, error, data })
 - Tailwind CSS
 - Custom components
 - Lucide React icons
+ 

@@ -42,10 +42,10 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[95vw] max-w-lg">
         <DialogHeader>
-          <DialogTitle>New Admin Report</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">New Admin Report</DialogTitle>
+          <DialogDescription className="text-sm sm:text-base">
             Enter the details of your report below.
           </DialogDescription>
         </DialogHeader>
@@ -54,22 +54,23 @@ export default function AdminReportModal({ onClose, onReportCreated }: AdminRepo
             value={reportText}
             onChange={(e) => setReportText(e.target.value)}
             placeholder="Enter report details..."
-            className="min-h-[150px]"
+            className="min-h-[120px] sm:min-h-[150px] text-sm sm:text-base"
             disabled={createReportMutation.isPending}
           />
         </div>
-        <DialogFooter className="mt-6">
+        <DialogFooter className="mt-6 flex-col sm:flex-row gap-2 sm:gap-0">
           <Button 
             variant="unstyled" 
             onClick={onClose} 
             disabled={createReportMutation.isPending} 
-            className="bg-transparent text-white hover:bg-[#1A1A1A]"
+            className="bg-transparent text-white hover:bg-[#1A1A1A] w-full sm:w-auto order-2 sm:order-1"
           >
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit} 
             disabled={createReportMutation.isPending || !reportText.trim()}
+            className="w-full sm:w-auto order-1 sm:order-2"
           >
             {createReportMutation.isPending ? "Submitting..." : "Submit Report"}
           </Button>

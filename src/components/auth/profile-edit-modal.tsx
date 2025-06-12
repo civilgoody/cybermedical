@@ -105,15 +105,15 @@ export default function ProfileEditModal({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent className="bg-[#141414] border border-[#1F1F1F] text-white max-w-2xl">
+      <DialogContent className="bg-[#141414] border border-[#1F1F1F] text-white w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">Edit Profile</DialogTitle>
-          <DialogDescription className="text-[#666666]">
+          <DialogTitle className="text-lg sm:text-xl font-semibold text-white">Edit Profile</DialogTitle>
+          <DialogDescription className="text-sm sm:text-base text-[#666666]">
             Update your profile details. Changes will apply after saving.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 py-6">
-          <div className="grid grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:gap-6 py-4 sm:py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-medium text-[#666666] mb-2">
                 First Name
@@ -170,14 +170,14 @@ export default function ProfileEditModal({
             <Textarea 
               {...register("bio")} 
               placeholder="Your bio" 
-              className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary min-h-[100px]"
+              className="bg-[#1A1A1A] border-[#1F1F1F] text-white placeholder:text-[#666666] focus-visible:ring-primary min-h-[80px] sm:min-h-[100px]"
               disabled={isUpdating}
             />
             {errors.bio && (
               <p className="text-red-400 text-sm mt-1">{errors.bio.message}</p>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-medium text-[#666666] mb-2">
                 Country
@@ -225,11 +225,11 @@ export default function ProfileEditModal({
               )}
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
             <DialogClose asChild>
               <Button 
                 variant="outline" 
-                className="bg-transparent border-[#1F1F1F] text-white hover:bg-[#1A1A1A] hover:text-white"
+                className="bg-transparent border-[#1F1F1F] text-white hover:bg-[#1A1A1A] hover:text-white w-full sm:w-auto order-2 sm:order-1"
                 disabled={isUpdating}
               >
                 Cancel
@@ -237,7 +237,7 @@ export default function ProfileEditModal({
             </DialogClose>
             <Button 
               type="submit"
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto order-1 sm:order-2"
               disabled={isUpdating}
             >
               {isUpdating ? "Saving..." : "Save Changes"}
