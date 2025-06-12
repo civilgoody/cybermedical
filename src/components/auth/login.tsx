@@ -137,7 +137,7 @@ export default function Login() {
   }, [user]);
 
   // Combined loading state - show loading if any auth operation is in progress OR profile is loading
-  const isLoading = authLoading || demoAuthLoading || profileLoading;
+  const isLoading = authLoading || demoAuthLoading /*|| profileLoading*/;
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-6">
@@ -168,7 +168,7 @@ export default function Login() {
               size="lg"
               className="w-full bg-primary hover:bg-primary/90 text-white font-medium h-12"
             >
-              {(demoAuthLoading || (profileLoading && demoAuthLoading)) ? (
+              {(demoAuthLoading || (/*profileLoading && */demoAuthLoading)) ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
                   Loading Demo...
@@ -253,7 +253,7 @@ export default function Login() {
               disabled={isLoading}
               className="w-full bg-[#1A1A1A] hover:bg-[#242424] text-white border border-[#333333] h-12"
             >
-              {(authLoading || (profileLoading && authLoading)) ? (
+              {(authLoading || (/*profileLoading && */authLoading)) ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin" />
                   Signing in...
@@ -273,7 +273,7 @@ export default function Login() {
             variant="outline"
             className="w-full bg-white hover:text-primary text-black border-gray-300 h-12 font-medium"
           >
-            {(authLoading || (profileLoading && authLoading)) ? (
+            {(authLoading || (/*profileLoading && */authLoading)) ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-t-2 border-black rounded-full animate-spin" />
                 Signing in...

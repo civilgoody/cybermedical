@@ -16,7 +16,7 @@ export default function Home() {
   }, []);
 
   // Don't render anything until mounted (prevents hydration mismatch)
-  if (!isMounted || isLoading) {
+  if (!isMounted) {
     return <LoadingScreen message="Loading dashboard..." />;
   }
 
