@@ -1,8 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, Clock } from "lucide-react"
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, Clock } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { severityColorMap } from "@/lib/constants";
 
 interface TechnicalAnalysis {
   technical_evaluation: string;
@@ -20,14 +26,24 @@ interface MitigationSteps {
 }
 
 interface AttackReportDetailProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  created_at: string
-  severity: "low" | "medium" | "high" | "critical"
-  description: string
-  technical_analysis: TechnicalAnalysis
-  mitigation_steps?: MitigationSteps
-  type: "DDoS" | "Phishing" | "SQL Injection" | "XSS" | "Malware Infection" | "Ransomware" | "Brute Force Attack" | "Man-in-the-Middle" | "Zero-Day Exploit" | "Insider Threat"
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  created_at: string;
+  severity: "low" | "medium" | "high" | "critical";
+  description: string;
+  technical_analysis: TechnicalAnalysis;
+  mitigation_steps?: MitigationSteps;
+  type:
+    | "DDoS"
+    | "Phishing"
+    | "SQL Injection"
+    | "XSS"
+    | "Malware Infection"
+    | "Ransomware"
+    | "Brute Force Attack"
+    | "Man-in-the-Middle"
+    | "Zero-Day Exploit"
+    | "Insider Threat";
 }
 
 function formatTechnicalAnalysis(analysis: TechnicalAnalysis): string {
@@ -73,35 +89,33 @@ export function AttackReportDetail({
   description,
   technical_analysis,
   mitigation_steps,
-  type
+  type,
 }: AttackReportDetailProps) {
   // Format the date
-  const formattedDate = new Date(created_at).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
-  })
+  const formattedDate = new Date(created_at).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
 
   // Capitalize severity for display
-  const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1)
+  const displaySeverity = severity.charAt(0).toUpperCase() + severity.slice(1);
   // Capitalize threat type for display
-  const displayType = type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Unknown'
+  const displayType = type
+    ? type.charAt(0).toUpperCase() + type.slice(1)
+    : "Unknown";
 
-  const analysisMarkdown = formatTechnicalAnalysis(technical_analysis)
-  const mitigationMarkdown = mitigation_steps ? formatMitigationSteps(mitigation_steps) : 'No mitigation steps provided.'
+  const analysisMarkdown = formatTechnicalAnalysis(technical_analysis);
+  const mitigationMarkdown = mitigation_steps
+    ? formatMitigationSteps(mitigation_steps)
+    : "No mitigation steps provided.";
 
   // Map severity to color
-  const severityColorMap = {
-    low: "bg-[#1A3A00] text-[#4CAF50] border-[#1A3A00]",
-    medium: "bg-[#453A00] text-[#FFD700] border-[#453A00]",
-    high: "bg-[#4A2500] text-[#FF9800] border-[#4A2500]",
-    critical: "bg-[#4A0000] text-[#FF5252] border-[#4A0000]"
-  }
 
-  const severityColor = severityColorMap[severity] || severityColorMap.medium
+  const severityColor = severityColorMap[severity] || severityColorMap.medium;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -112,13 +126,21 @@ export function AttackReportDetail({
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-white" />
-                <DialogTitle className="text-white text-xl">Attack Report</DialogTitle>
+                <DialogTitle className="text-white text-xl">
+                  Attack Report
+                </DialogTitle>
               </div>
               <div className="flex gap-2">
-                <Badge variant="outline" className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5">
+                <Badge
+                  variant="outline"
+                  className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5"
+                >
                   {displayType}
                 </Badge>
-                <Badge variant="outline" className={`${severityColor} rounded-md px-3 py-0.5`}>
+                <Badge
+                  variant="outline"
+                  className={`${severityColor} rounded-md px-3 py-0.5`}
+                >
                   {displaySeverity}
                 </Badge>
               </div>
@@ -169,5 +191,5 @@ export function AttackReportDetail({
         </div>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

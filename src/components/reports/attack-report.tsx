@@ -3,6 +3,7 @@ import { AlertTriangle, Clock, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { AttackReportDetail } from "./attack-report-detail";
+import { severityColorMap } from "@/lib/constants";
 
 interface TechnicalAnalysis {
   technical_evaluation: string;
@@ -65,6 +66,8 @@ export function AttackReport({
     ? type.charAt(0).toUpperCase() + type.slice(1)
     : "Unknown";
 
+  const severityColor = severityColorMap[severity];
+
   // Create a short preview of the technical analysis
   const previewTechnicalAnalysis =
     technical_analysis.technical_evaluation?.substring(0, 100) +
@@ -82,7 +85,7 @@ export function AttackReport({
             <AlertTriangle className="w-5 h-5 text-white flex-shrink-0" />
             <span className="text-white text-sm truncate">Attack Report</span>
           </div>
-          <div className="flex flex-wrap gap-2 col-span-1 justify-end">
+          <div className="flex flex-wrap gap-2 justify-end">
             <Badge
               variant="outline"
               className="bg-[#1A1A1A] text-[#FF29A8] border-[#FF29A8] rounded-md px-3 py-0.5 whitespace-nowrap"
@@ -91,7 +94,7 @@ export function AttackReport({
             </Badge>
             <Badge
               variant="outline"
-              className="bg-[#453A00] text-[#FFD700] border-[#453A00] rounded-md px-3 py-0.5 whitespace-nowrap"
+              className={`${severityColor} rounded-md px-3 py-0.5 whitespace-nowrap`}
             >
               {displaySeverity}
             </Badge>
