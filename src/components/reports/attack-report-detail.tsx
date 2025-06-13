@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Clock } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { severityColorMap } from "@/lib/constants";
 
 interface TechnicalAnalysis {
   technical_evaluation: string;
@@ -113,10 +112,6 @@ export function AttackReportDetail({
     ? formatMitigationSteps(mitigation_steps)
     : "No mitigation steps provided.";
 
-  // Map severity to color
-
-  const severityColor = severityColorMap[severity] || severityColorMap.medium;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#141414] border-[#1F1F1F] text-white max-w-3xl max-h-[80vh] py-10 px-0 flex flex-col">
@@ -139,7 +134,8 @@ export function AttackReportDetail({
                 </Badge>
                 <Badge
                   variant="outline"
-                  className={`${severityColor} rounded-md px-3 py-0.5`}
+                  color={severity}
+                  className="rounded-md px-3 py-0.5"
                 >
                   {displaySeverity}
                 </Badge>
