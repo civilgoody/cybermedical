@@ -27,32 +27,7 @@ import { FiUser } from "react-icons/fi"
 
 export function Header() {
   const router = useRouter()
-  const { user, profile, isLoading } = useProfileHook();
-
-  const handleSignOut = async () => {
-    try {
-      console.log('🚪 Starting sign out process...');
-      
-      // Sign out from Supabase - the useProfile hook will handle clearing cache
-      const { error } = await supabase().auth.signOut();
-      
-    if (error) {
-        console.error("Error signing out:", error);
-        toast.error("Sign out failed", {
-          description: error.message
-        });
-        return;
-    }
-      
-      console.log('✅ Successfully signed out');
-      
-    } catch (error) {
-      console.error("Unexpected error during sign out:", error);
-      toast.error("Sign out failed", {
-        description: "An unexpected error occurred"
-      });
-  }
-  };
+  const { user, profile, isLoading, handleSignOut } = useProfileHook();
 
   const isAuthenticated = !!user && !isLoading;
 
