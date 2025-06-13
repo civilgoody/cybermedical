@@ -1,13 +1,13 @@
-import { ChevronDown, LogOut } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { NavMenu } from "./nav-menu"
-import { MobileMenu } from "./mobile-menu"
-import { UtilityButtons } from "../shared/utility-buttons"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/utils/supabase/client"
-import { useProfile as useProfileHook } from "@/hooks/use-profile"
-import { toast } from "sonner"
+import { ChevronDown, LogOut } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { NavMenu } from "./nav-menu";
+import { MobileMenu } from "./mobile-menu";
+import { UtilityButtons } from "../shared/utility-buttons";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabase/client";
+import { useProfile as useProfileHook } from "@/hooks/use-profile";
+import { toast } from "sonner";
 
 // Import Shadcn UI DropdownMenu components
 import {
@@ -17,16 +17,16 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 // Import Shadcn UI Button component
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 // Import React Icon for profile
-import { FiUser } from "react-icons/fi"
+import { FiUser } from "react-icons/fi";
 
 export function Header() {
-  const router = useRouter()
+  const router = useRouter();
   const { user, profile, isLoading, handleSignOut } = useProfileHook();
 
   const isAuthenticated = !!user && !isLoading;
@@ -37,11 +37,19 @@ export function Header() {
       <div className="flex items-center gap-4">
         {/* Logo */}
         <div className="flex-shrink-0">
-          <Link href="/" className="p-2 rounded-full border border-purple-500/20">
-            <Image src="/cyber-logo.png" alt="Cyber Logo" width={48} height={48} />
+          <Link
+            href="/"
+            className="p-2 rounded-full border border-purple-500/20"
+          >
+            <Image
+              src="/cyber-logo.png"
+              alt="Cyber Logo"
+              width={48}
+              height={48}
+            />
           </Link>
         </div>
-        
+
         {/* Mobile Menu - Only show when authenticated */}
         {isAuthenticated && <MobileMenu />}
       </div>
@@ -100,14 +108,13 @@ export function Header() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-sm text-muted hover:bg-transparent hover:text-foreground cursor-pointer"
-                    onClick={() => router.push("/profile")}
+                <Link
+                  href="/profile"
+                  className="w-full justify-start text-muted hover:bg-transparent hover:text-foreground cursor-pointer"
                 >
                   <FiUser className="mr-2 w-4 h-4" />
                   My Profile
-                </Button>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Button
@@ -125,11 +132,13 @@ export function Header() {
           // Fallback (e.g., region button) when not signed in or profile not loaded
           <button className="flex items-center gap-2 bg-[#1A1A1A] rounded-full px-2 sm:px-4 py-2">
             <Image src="/uk-flag.png" alt="UK Flag" width={24} height={24} />
-            <span className="text-sm text-foreground hidden sm:block">United Kingdom</span>
+            <span className="text-sm text-foreground hidden sm:block">
+              United Kingdom
+            </span>
             <ChevronDown className="w-4 h-4 text-muted hidden sm:block" />
           </button>
         )}
       </div>
     </div>
-  )
-} 
+  );
+}
