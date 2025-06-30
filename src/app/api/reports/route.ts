@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/utils/supabase/server';
-import { z } from 'zod';
+import { NextResponse } from "next/server";
+import { supabase, supabaseAdmin } from "@/utils/supabase/server";
+import { z } from "zod";
 
 // Define a Zod schema for validating the new report payload
 const ReportSchema = z.object({
@@ -15,7 +15,7 @@ const ReportSchema = z.object({
     "Man-in-the-Middle",
     "Zero-Day Exploit",
     "Insider Threat",
-    "Network Scan"
+    "Network Scan",
   ]),
   severity: z.enum(["low", "medium", "high", "critical"]),
   description: z.string(),
@@ -23,27 +23,27 @@ const ReportSchema = z.object({
     technical_evaluation: z.string(),
     risk_assessment: z.string(),
     attack_chain: z.string(),
-    iocs: z.array(z.string())
+    iocs: z.array(z.string()),
   }),
   mitigation_steps: z.object({
     immediate: z.string(),
     containment: z.string(),
     eradication: z.string(),
     recovery: z.string(),
-    prevention: z.string()
+    prevention: z.string(),
   }),
   confidence_score: z.string(),
-  references: z.array(z.string())
+  references: z.array(z.string()),
 });
 
 export async function POST(request: Request) {
   if (!supabase) {
     return NextResponse.json(
-      { error: 'Database connection not configured' },
+      { error: "Database connection not configured" },
       { status: 500 }
     );
   }
-  
+
   try {
     // Parse and validate the request body with the new schema
     const body = await request.json();
@@ -56,9 +56,12 @@ export async function POST(request: Request) {
       );
     }
     const report = parseResult.data;
-    
+
     // Insert the validated data into the database.
-    const { data, error } = await (await supabase()).from('attack_reports')
+    const { data, error } = await (
+      await supabase()
+    )
+      .from("attack_reports")
       .insert({
         type: report.type,
         severity: report.severity,
@@ -67,7 +70,7 @@ export async function POST(request: Request) {
         mitigation_steps: report.mitigation_steps,
         confidence_score: report.confidence_score,
         references: report.references,
-        created_at: new Date().toISOString() // Explicit timestamp
+        created_at: new Date().toISOString(), // Explicit timestamp
       })
       .select()
       .single();
@@ -76,9 +79,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Error processing report:', error);
+    console.error("Error processing report:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -87,25 +90,25 @@ export async function POST(request: Request) {
 export async function GET() {
   if (!supabase) {
     return NextResponse.json(
-      { error: 'Database connection not configured' },
+      { error: "Database connection not configured" },
       { status: 500 }
     );
   }
 
   try {
-    const { data, error } = await (await supabase()).from('attack_reports')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
+    const { data, error } = await (await supabase())
+      .from("attack_reports")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching reports:', error);
+    console.error("Error fetching reports:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
-} 
+}
